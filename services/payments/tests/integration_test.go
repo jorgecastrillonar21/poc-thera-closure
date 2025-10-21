@@ -42,7 +42,7 @@ func setupTestDatabase(t *testing.T) *TestDatabase {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent), // Quiet for tests
 	})
-	
+
 	if err != nil {
 		t.Skipf("Skipping integration tests: could not connect to test database: %v", err)
 		return nil
@@ -298,29 +298,29 @@ func TestPaymentService_Integration(t *testing.T) {
 
 func TestPaymentService_BusinessRules_Integration(t *testing.T) {
 	// These tests validate business rules without requiring database
-	
+
 	t.Run("Customer validation rules", func(t *testing.T) {
 		// Test duplicate customer prevention
 		userID := uuid.New().String()
-		
+
 		// In a real integration test, we would:
 		// 1. Create a customer with userID
 		// 2. Try to create another customer with same userID
 		// 3. Expect an error
-		
+
 		// For now, we'll test the validation logic
 		req1 := ports.CreateCustomerRequest{
 			UserID: userID,
 			Email:  "test1@example.com",
 			Name:   "Test User 1",
 		}
-		
+
 		req2 := ports.CreateCustomerRequest{
 			UserID: userID,
-			Email:  "test2@example.com", 
+			Email:  "test2@example.com",
 			Name:   "Test User 2",
 		}
-		
+
 		// Both requests are valid individually
 		assert.NotEmpty(t, req1.UserID)
 		assert.NotEmpty(t, req2.UserID)
@@ -329,26 +329,26 @@ func TestPaymentService_BusinessRules_Integration(t *testing.T) {
 
 	t.Run("Payment amount validation", func(t *testing.T) {
 		customerID := uuid.New().String()
-		
+
 		// Valid payment amounts
 		validPayments := []ports.CreatePaymentRequest{
 			{CustomerID: customerID, Amount: 1, Currency: "usd"},
 			{CustomerID: customerID, Amount: 100, Currency: "usd"},
 			{CustomerID: customerID, Amount: 999999, Currency: "eur"},
 		}
-		
+
 		for _, payment := range validPayments {
 			assert.True(t, payment.Amount > 0, "Amount %d should be valid", payment.Amount)
 			assert.NotEmpty(t, payment.Currency)
 		}
-		
+
 		// Invalid payment amounts
 		invalidPayments := []ports.CreatePaymentRequest{
 			{CustomerID: customerID, Amount: 0, Currency: "usd"},
 			{CustomerID: customerID, Amount: -100, Currency: "usd"},
 			{CustomerID: customerID, Amount: 100, Currency: ""}, // Missing currency
 		}
-		
+
 		for _, payment := range invalidPayments {
 			isValid := payment.Amount > 0 && payment.Currency != "" && payment.CustomerID != ""
 			assert.False(t, isValid, "Payment should be invalid: %+v", payment)
@@ -370,15 +370,15 @@ func TestWebhookProcessing_Integration(t *testing.T) {
 				}
 			}
 		}`
-		
+
 		signature := "test_signature"
-		
+
 		// In a real integration test, we would:
 		// 1. Set up payment service with database
 		// 2. Create a payment intent
 		// 3. Process the webhook
 		// 4. Verify the payment status was updated
-		
+
 		// For now, validate the payload structure
 		assert.Contains(t, payload, "payment_intent.succeeded")
 		assert.Contains(t, payload, "pi_test_123")
@@ -390,21 +390,21 @@ func TestEndToEndPaymentFlow_Integration(t *testing.T) {
 	t.Run("Complete payment flow simulation", func(t *testing.T) {
 		// This test simulates a complete payment flow
 		// In a real integration test with database:
-		
+
 		// 1. Create customer
 		customerReq := ports.CreateCustomerRequest{
 			UserID: uuid.New().String(),
 			Email:  "e2e@example.com",
 			Name:   "E2E Test Customer",
 		}
-		
+
 		// 2. Create subscription
 		subscriptionReq := ports.CreateSubscriptionRequest{
 			CustomerID: "customer_id", // Would be from step 1
 			PriceID:    "price_monthly",
 			TrialDays:  func() *int { days := 7; return &days }(),
 		}
-		
+
 		// 3. Create payment intent
 		paymentIntentReq := ports.CreatePaymentIntentRequest{
 			CustomerID:  "customer_id", // Would be from step 1
@@ -412,11 +412,11 @@ func TestEndToEndPaymentFlow_Integration(t *testing.T) {
 			Currency:    "usd",
 			Description: "Monthly subscription",
 		}
-		
+
 		// 4. Process webhook for successful payment
 		// 5. Verify subscription is active
 		// 6. Verify payment record exists
-		
+
 		// For now, validate request structures
 		assert.NotEmpty(t, customerReq.Email)
 		assert.NotEmpty(t, subscriptionReq.PriceID)

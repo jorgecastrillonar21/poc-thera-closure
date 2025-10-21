@@ -6,21 +6,33 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 
 	"theraclosure/payments-service/internal/adapters/config"
+	"theraclosure/payments-service/internal/adapters/http/middleware"
+	"theraclosure/payments-service/internal/adapters/logging"
 	"theraclosure/payments-service/internal/core/ports"
 )
 
 type Server struct {
-	service ports.PaymentService
-	config  *config.Config
-	router  *gin.Engine
+	service   ports.PaymentService
+	config    *config.Config
+	router    *gin.Engine
+	db        *gorm.DB
+	redis     *redis.Client
+	stripeKey string
+	logger    *logging.Logger
 }
 
-func NewServer(service ports.PaymentService, cfg *config.Config) *Server {
+func NewServer(service ports.PaymentService, cfg *config.Config, db *gorm.DB, redis *redis.Client, logger *logging.Logger) *Server {
 	server := &Server{
-		service: service,
-		config:  cfg,
+		service:   service,
+		config:    cfg,
+		db:        db,
+		redis:     redis,
+		stripeKey: cfg.Stripe.SecretKey,
+		logger:    logger,
 	}
 
 	server.setupRouter()
@@ -36,8 +48,14 @@ func (s *Server) setupRouter() {
 	}
 
 	s.router = gin.New()
-	s.router.Use(gin.Logger())
-	s.router.Use(gin.Recovery())
+
+	// Add custom middleware for logging and error handling
+	s.router.Use(middleware.RequestIDMiddleware())
+	s.router.Use(middleware.RecoveryMiddleware(s.logger))
+	s.router.Use(middleware.LoggingMiddleware(s.logger))
+	s.router.Use(middleware.ErrorHandlingMiddleware(s.logger))
+	s.router.Use(middleware.SecurityLoggingMiddleware(s.logger))
+	s.router.Use(middleware.RequestSizeMiddleware(10 * 1024 * 1024)) // 10MB limit
 
 	// CORS middleware
 	corsConfig := cors.Config{
@@ -50,15 +68,18 @@ func (s *Server) setupRouter() {
 	}
 	s.router.Use(cors.New(corsConfig))
 
-	// Health check endpoint
-	s.router.GET("/health", s.healthCheck)
+	// Health check endpoints
+	s.router.GET("/health", s.healthCheck)                  // Basic health check
+	s.router.GET("/health/detailed", s.detailedHealthCheck) // Detailed health with components
+	s.router.GET("/health/ready", s.readinessProbe)         // Kubernetes readiness probe
+	s.router.GET("/health/live", s.livenessProbe)           // Kubernetes liveness probe
 
 	// API v1 routes
 	v1 := s.router.Group("/api/v1")
 	{
 		// Health check endpoint
 		v1.GET("/health", s.healthCheck)
-		
+
 		// Customer routes
 		customers := v1.Group("/customers")
 		{
@@ -105,16 +126,24 @@ func (s *Server) Start() error {
 	return s.router.Run(s.config.GetServerAddress())
 }
 
-// Health check handler
-func (s *Server) healthCheck(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"service":   s.config.App.Name,
-		"status":    "healthy",
-		"timestamp": time.Now().Unix(),
-	})
+// AddSwaggerEndpoint adds Swagger documentation endpoint
+func (s *Server) AddSwaggerEndpoint(handler gin.HandlerFunc) {
+	s.router.GET("/swagger/*any", handler)
 }
 
 // Customer handlers
+
+// CreateCustomer godoc
+// @Summary Create a new customer
+// @Description Create a new customer in the payments system
+// @Tags customers
+// @Accept json
+// @Produce json
+// @Param customer body ports.CreateCustomerRequest true "Customer creation request"
+// @Success 201 {object} domain.Customer
+// @Failure 400 {object} errors.ErrorResponse
+// @Failure 500 {object} errors.ErrorResponse
+// @Router /customers [post]
 func (s *Server) createCustomer(c *gin.Context) {
 	var req ports.CreateCustomerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

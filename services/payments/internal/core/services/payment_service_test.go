@@ -34,14 +34,14 @@ func createTestSubscription(t *testing.T, customerID string) *domain.Subscriptio
 	return &domain.Subscription{
 		ID:                 uuid.New().String(),
 		CustomerID:         customerID,
-		StripeID:          "sub_test_" + uuid.New().String(),
-		PriceID:           "price_test_123",
-		Status:            domain.SubscriptionStatusActive,
+		StripeID:           "sub_test_" + uuid.New().String(),
+		PriceID:            "price_test_123",
+		Status:             domain.SubscriptionStatusActive,
 		CurrentPeriodStart: time.Now(),
 		CurrentPeriodEnd:   time.Now().AddDate(0, 1, 0),
-		Amount:            2000,
-		Currency:          "usd",
-		Active:            true,
+		Amount:             2000,
+		Currency:           "usd",
+		Active:             true,
 	}
 }
 
@@ -109,7 +109,7 @@ func TestPaymentService_ValidateCustomerRequests(t *testing.T) {
 				hasUserID := tt.request.UserID != ""
 				hasValidEmail := isValidEmail(tt.request.Email)
 				hasName := tt.request.Name != ""
-				
+
 				isValid := hasUserID && hasValidEmail && hasName
 				if tt.wantErr {
 					assert.False(t, isValid, "Request should be invalid")
@@ -167,7 +167,7 @@ func TestPaymentService_ValidateSubscriptionRequests(t *testing.T) {
 				// Basic validation logic test
 				hasCustomerID := tt.request.CustomerID != ""
 				hasPriceID := tt.request.PriceID != ""
-				
+
 				isValid := hasCustomerID && hasPriceID
 				if tt.wantErr {
 					assert.False(t, isValid, "Request should be invalid")
@@ -250,7 +250,7 @@ func TestPaymentService_ValidatePaymentRequests(t *testing.T) {
 				hasCustomerID := tt.request.CustomerID != ""
 				hasValidAmount := tt.request.Amount > 0
 				hasCurrency := tt.request.Currency != ""
-				
+
 				isValid := hasCustomerID && hasValidAmount && hasCurrency
 				if tt.wantErr {
 					assert.False(t, isValid, "Request should be invalid")
@@ -327,7 +327,7 @@ func TestPaymentService_ValidatePaymentIntentRequests(t *testing.T) {
 				hasCustomerID := tt.request.CustomerID != ""
 				hasValidAmount := tt.request.Amount > 0
 				hasCurrency := tt.request.Currency != ""
-				
+
 				isValid := hasCustomerID && hasValidAmount && hasCurrency
 				if tt.wantErr {
 					assert.False(t, isValid, "Request should be invalid")
@@ -345,17 +345,17 @@ func TestListRequestsPagination(t *testing.T) {
 			Offset: 0,
 			Limit:  10,
 		}
-		
+
 		assert.Equal(t, 0, req.Offset)
 		assert.Equal(t, 10, req.Limit)
-		
+
 		// Test default limit handling
 		if req.Limit == 0 {
 			req.Limit = 10
 		}
 		assert.Equal(t, 10, req.Limit)
 	})
-	
+
 	t.Run("ListSubscriptionsRequest pagination", func(t *testing.T) {
 		customerID := uuid.New().String()
 		req := ports.ListSubscriptionsRequest{
@@ -364,13 +364,13 @@ func TestListRequestsPagination(t *testing.T) {
 			Offset:     20,
 			Limit:      50,
 		}
-		
+
 		assert.Equal(t, customerID, req.CustomerID)
 		assert.Equal(t, "active", req.Status)
 		assert.Equal(t, 20, req.Offset)
 		assert.Equal(t, 50, req.Limit)
 	})
-	
+
 	t.Run("ListPaymentsRequest pagination", func(t *testing.T) {
 		customerID := uuid.New().String()
 		subscriptionID := uuid.New().String()
@@ -381,7 +381,7 @@ func TestListRequestsPagination(t *testing.T) {
 			Offset:         10,
 			Limit:          25,
 		}
-		
+
 		assert.Equal(t, customerID, req.CustomerID)
 		assert.Equal(t, subscriptionID, req.SubscriptionID)
 		assert.Equal(t, "succeeded", req.Status)
@@ -396,32 +396,32 @@ func TestResponseStructures(t *testing.T) {
 			createTestCustomer(t),
 			createTestCustomer(t),
 		}
-		
+
 		response := ports.ListCustomersResponse{
 			Customers: customers,
 			Total:     100,
 			Offset:    0,
 			Limit:     10,
 		}
-		
+
 		assert.Len(t, response.Customers, 2)
 		assert.Equal(t, int64(100), response.Total)
 		assert.Equal(t, 0, response.Offset)
 		assert.Equal(t, 10, response.Limit)
 	})
-	
+
 	t.Run("CreatePaymentIntentResponse", func(t *testing.T) {
 		response := ports.CreatePaymentIntentResponse{
 			PaymentIntentID: "pi_test_123",
 			ClientSecret:    "pi_test_123_secret",
 			Status:          "requires_payment_method",
 		}
-		
+
 		assert.Equal(t, "pi_test_123", response.PaymentIntentID)
 		assert.Equal(t, "pi_test_123_secret", response.ClientSecret)
 		assert.Equal(t, "requires_payment_method", response.Status)
 	})
-	
+
 	t.Run("ConfirmPaymentIntentResponse", func(t *testing.T) {
 		paymentID := uuid.New().String()
 		response := ports.ConfirmPaymentIntentResponse{
@@ -429,7 +429,7 @@ func TestResponseStructures(t *testing.T) {
 			Status:          "succeeded",
 			PaymentID:       paymentID,
 		}
-		
+
 		assert.Equal(t, "pi_test_123", response.PaymentIntentID)
 		assert.Equal(t, "succeeded", response.Status)
 		assert.Equal(t, paymentID, response.PaymentID)
@@ -439,58 +439,58 @@ func TestResponseStructures(t *testing.T) {
 func TestDomainModelBusinessLogic(t *testing.T) {
 	t.Run("Customer business logic", func(t *testing.T) {
 		customer := createTestCustomer(t)
-		
+
 		// Test validation
 		assert.True(t, customer.IsValid())
-		
+
 		// Test invalid cases
 		customer.UserID = ""
 		assert.False(t, customer.IsValid())
-		
+
 		customer.UserID = uuid.New().String()
 		customer.Email = ""
 		assert.False(t, customer.IsValid())
-		
+
 		customer.Email = "test@example.com"
 		customer.Name = ""
 		assert.False(t, customer.IsValid())
 	})
-	
+
 	t.Run("Subscription business logic", func(t *testing.T) {
 		customerID := uuid.New().String()
 		subscription := createTestSubscription(t, customerID)
-		
+
 		// Test validation
 		assert.True(t, subscription.IsValid())
-		
+
 		// Test lifecycle
 		assert.Equal(t, domain.SubscriptionStatusActive, subscription.Status)
-		
+
 		// Test cancellation
 		subscription.Status = domain.SubscriptionStatusCanceled
 		now := time.Now()
 		subscription.CanceledAt = &now
-		
+
 		assert.Equal(t, domain.SubscriptionStatusCanceled, subscription.Status)
 		assert.NotNil(t, subscription.CanceledAt)
 	})
-	
+
 	t.Run("Payment business logic", func(t *testing.T) {
 		customerID := uuid.New().String()
 		subscriptionID := uuid.New().String()
 		payment := createTestPayment(t, customerID, &subscriptionID)
-		
+
 		// Test validation
 		assert.True(t, payment.IsValid())
-		
+
 		// Test payment lifecycle
 		assert.Equal(t, domain.PaymentStatusSucceeded, payment.Status)
-		
+
 		// Test refund
 		payment.Status = domain.PaymentStatusRefunded
 		now := time.Now()
 		payment.RefundedAt = &now
-		
+
 		assert.Equal(t, domain.PaymentStatusRefunded, payment.Status)
 		assert.NotNil(t, payment.RefundedAt)
 	})
@@ -499,7 +499,7 @@ func TestDomainModelBusinessLogic(t *testing.T) {
 func TestBusinessRules(t *testing.T) {
 	t.Run("Payment amount validation", func(t *testing.T) {
 		customerID := uuid.New().String()
-		
+
 		// Valid amounts
 		validAmounts := []int64{1, 50, 100, 1000, 999999}
 		for _, amount := range validAmounts {
@@ -510,7 +510,7 @@ func TestBusinessRules(t *testing.T) {
 			}
 			assert.True(t, payment.IsValid(), "Amount %d should be valid", amount)
 		}
-		
+
 		// Invalid amounts
 		invalidAmounts := []int64{0, -1, -100}
 		for _, amount := range invalidAmounts {
@@ -522,11 +522,11 @@ func TestBusinessRules(t *testing.T) {
 			assert.False(t, payment.IsValid(), "Amount %d should be invalid", amount)
 		}
 	})
-	
+
 	t.Run("Subscription status transitions", func(t *testing.T) {
 		customerID := uuid.New().String()
 		subscription := createTestSubscription(t, customerID)
-		
+
 		// Valid status transitions
 		validStatuses := []domain.SubscriptionStatus{
 			domain.SubscriptionStatusTrialing,
@@ -536,17 +536,17 @@ func TestBusinessRules(t *testing.T) {
 			domain.SubscriptionStatusCanceled,
 			domain.SubscriptionStatusPaused,
 		}
-		
+
 		for _, status := range validStatuses {
 			subscription.Status = status
 			assert.True(t, subscription.IsValid(), "Status %s should be valid", status)
 		}
 	})
-	
+
 	t.Run("Payment status transitions", func(t *testing.T) {
 		customerID := uuid.New().String()
 		payment := createTestPayment(t, customerID, nil)
-		
+
 		// Valid status transitions
 		validStatuses := []domain.PaymentStatus{
 			domain.PaymentStatusPending,
@@ -555,7 +555,7 @@ func TestBusinessRules(t *testing.T) {
 			domain.PaymentStatusRefunded,
 			domain.PaymentStatusCanceled,
 		}
-		
+
 		for _, status := range validStatuses {
 			payment.Status = status
 			assert.True(t, payment.IsValid(), "Status %s should be valid", status)
@@ -567,7 +567,7 @@ func TestCurrencySupport(t *testing.T) {
 	t.Run("Supported currencies", func(t *testing.T) {
 		customerID := uuid.New().String()
 		supportedCurrencies := []string{"usd", "eur", "gbp", "cad", "aud", "jpy"}
-		
+
 		for _, currency := range supportedCurrencies {
 			payment := &domain.Payment{
 				CustomerID: customerID,
@@ -575,7 +575,7 @@ func TestCurrencySupport(t *testing.T) {
 				Currency:   currency,
 			}
 			assert.True(t, payment.IsValid(), "Currency %s should be supported", currency)
-			
+
 			subscription := &domain.Subscription{
 				CustomerID: customerID,
 				PriceID:    "price_123",

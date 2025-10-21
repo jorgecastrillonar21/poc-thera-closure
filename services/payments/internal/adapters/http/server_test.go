@@ -21,7 +21,7 @@ import (
 func setupTestServer() (*gin.Engine, *config.Config) {
 	// Set Gin to test mode
 	gin.SetMode(gin.TestMode)
-	
+
 	// Create test config
 	cfg := &config.Config{}
 	cfg.App.Name = "test-payments-service"
@@ -32,10 +32,10 @@ func setupTestServer() (*gin.Engine, *config.Config) {
 
 	// Create a mock payment service for testing
 	mockService := &MockPaymentService{}
-	
-	// Create server with mock service
-	server := NewServer(mockService, cfg)
-	
+
+	// Create server with mock service and nil dependencies for testing
+	server := NewServer(mockService, cfg, nil, nil, nil)
+
 	return server.router, cfg
 }
 
@@ -102,19 +102,45 @@ func (m *MockPaymentService) HealthCheck(ctx context.Context) error {
 }
 
 // Add other required methods as no-ops for testing
-func (m *MockPaymentService) CreateSubscription(ctx context.Context, req ports.CreateSubscriptionRequest) (*domain.Subscription, error) { return nil, nil }
-func (m *MockPaymentService) GetSubscription(ctx context.Context, id string) (*domain.Subscription, error) { return nil, nil }
-func (m *MockPaymentService) UpdateSubscription(ctx context.Context, id string, req ports.UpdateSubscriptionRequest) (*domain.Subscription, error) { return nil, nil }
-func (m *MockPaymentService) CancelSubscription(ctx context.Context, id string) (*domain.Subscription, error) { return nil, nil }
-func (m *MockPaymentService) ListSubscriptions(ctx context.Context, req ports.ListSubscriptionsRequest) (*ports.ListSubscriptionsResponse, error) { return nil, nil }
-func (m *MockPaymentService) GetCustomerSubscriptions(ctx context.Context, customerID string) ([]*domain.Subscription, error) { return nil, nil }
-func (m *MockPaymentService) CreatePayment(ctx context.Context, req ports.CreatePaymentRequest) (*domain.Payment, error) { return nil, nil }
-func (m *MockPaymentService) GetPayment(ctx context.Context, id string) (*domain.Payment, error) { return nil, nil }
-func (m *MockPaymentService) ListPayments(ctx context.Context, req ports.ListPaymentsRequest) (*ports.ListPaymentsResponse, error) { return nil, nil }
-func (m *MockPaymentService) RefundPayment(ctx context.Context, id string, amount *int64) (*domain.Payment, error) { return nil, nil }
-func (m *MockPaymentService) CreatePaymentIntent(ctx context.Context, req ports.CreatePaymentIntentRequest) (*ports.CreatePaymentIntentResponse, error) { return nil, nil }
-func (m *MockPaymentService) ConfirmPaymentIntent(ctx context.Context, paymentIntentID string) (*ports.ConfirmPaymentIntentResponse, error) { return nil, nil }
-func (m *MockPaymentService) HandleWebhook(ctx context.Context, payload []byte, signature string) error { return nil }
+func (m *MockPaymentService) CreateSubscription(ctx context.Context, req ports.CreateSubscriptionRequest) (*domain.Subscription, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) GetSubscription(ctx context.Context, id string) (*domain.Subscription, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) UpdateSubscription(ctx context.Context, id string, req ports.UpdateSubscriptionRequest) (*domain.Subscription, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) CancelSubscription(ctx context.Context, id string) (*domain.Subscription, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) ListSubscriptions(ctx context.Context, req ports.ListSubscriptionsRequest) (*ports.ListSubscriptionsResponse, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) GetCustomerSubscriptions(ctx context.Context, customerID string) ([]*domain.Subscription, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) CreatePayment(ctx context.Context, req ports.CreatePaymentRequest) (*domain.Payment, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) GetPayment(ctx context.Context, id string) (*domain.Payment, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) ListPayments(ctx context.Context, req ports.ListPaymentsRequest) (*ports.ListPaymentsResponse, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) RefundPayment(ctx context.Context, id string, amount *int64) (*domain.Payment, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) CreatePaymentIntent(ctx context.Context, req ports.CreatePaymentIntentRequest) (*ports.CreatePaymentIntentResponse, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) ConfirmPaymentIntent(ctx context.Context, paymentIntentID string) (*ports.ConfirmPaymentIntentResponse, error) {
+	return nil, nil
+}
+func (m *MockPaymentService) HandleWebhook(ctx context.Context, payload []byte, signature string) error {
+	return nil
+}
 
 func TestHealthCheckEndpoints(t *testing.T) {
 	router, _ := setupTestServer()
@@ -148,11 +174,11 @@ func TestHealthCheckEndpoints(t *testing.T) {
 			router.ServeHTTP(w, req)
 
 			assert.Equal(t, tt.expected, w.Code)
-			
+
 			var response map[string]interface{}
 			err = json.Unmarshal(w.Body.Bytes(), &response)
 			require.NoError(t, err)
-			
+
 			assert.Equal(t, "healthy", response["status"])
 			assert.NotEmpty(t, response["timestamp"])
 		})
@@ -168,7 +194,7 @@ func TestCustomerEndpoints(t *testing.T) {
 			Email:  "test@example.com",
 			Name:   "Test Customer",
 		}
-		
+
 		jsonData, err := json.Marshal(customerReq)
 		require.NoError(t, err)
 
@@ -180,11 +206,11 @@ func TestCustomerEndpoints(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
-		
+
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		
+
 		assert.NotNil(t, response["data"])
 	})
 
@@ -192,7 +218,7 @@ func TestCustomerEndpoints(t *testing.T) {
 		invalidReq := map[string]interface{}{
 			"email": "invalid-email",
 		}
-		
+
 		jsonData, err := json.Marshal(invalidReq)
 		require.NoError(t, err)
 
@@ -208,7 +234,7 @@ func TestCustomerEndpoints(t *testing.T) {
 
 	t.Run("Get Customer", func(t *testing.T) {
 		customerID := uuid.New().String()
-		
+
 		req, err := http.NewRequest("GET", "/api/v1/customers/"+customerID, nil)
 		require.NoError(t, err)
 
@@ -216,11 +242,11 @@ func TestCustomerEndpoints(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		
+
 		assert.NotNil(t, response["data"])
 	})
 
@@ -241,7 +267,7 @@ func TestCustomerEndpoints(t *testing.T) {
 			Email: "updated@example.com",
 			Name:  "Updated Name",
 		}
-		
+
 		jsonData, err := json.Marshal(updateReq)
 		require.NoError(t, err)
 
@@ -253,17 +279,17 @@ func TestCustomerEndpoints(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		
+
 		assert.NotNil(t, response["data"])
 	})
 
 	t.Run("Delete Customer", func(t *testing.T) {
 		customerID := uuid.New().String()
-		
+
 		req, err := http.NewRequest("DELETE", "/api/v1/customers/"+customerID, nil)
 		require.NoError(t, err)
 
@@ -271,11 +297,11 @@ func TestCustomerEndpoints(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		
+
 		assert.Equal(t, "Customer deleted successfully", response["message"])
 	})
 
@@ -287,17 +313,17 @@ func TestCustomerEndpoints(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		
+
 		assert.NotNil(t, response["data"])
 	})
 
 	t.Run("Get Customer By User ID", func(t *testing.T) {
 		userID := uuid.New().String()
-		
+
 		req, err := http.NewRequest("GET", "/api/v1/customers/user/"+userID, nil)
 		require.NoError(t, err)
 
@@ -305,11 +331,11 @@ func TestCustomerEndpoints(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		
+
 		assert.NotNil(t, response["data"])
 	})
 }
@@ -339,7 +365,7 @@ func TestInvalidJSONHandling(t *testing.T) {
 
 	t.Run("Invalid JSON Body", func(t *testing.T) {
 		invalidJSON := `{"invalid": json}`
-		
+
 		req, err := http.NewRequest("POST", "/api/v1/customers", bytes.NewBufferString(invalidJSON))
 		require.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
@@ -348,11 +374,11 @@ func TestInvalidJSONHandling(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
-		
+
 		var response map[string]interface{}
 		err = json.Unmarshal(w.Body.Bytes(), &response)
 		require.NoError(t, err)
-		
+
 		assert.Equal(t, "Invalid request body", response["error"])
 	})
 }

@@ -78,7 +78,7 @@ func TestCustomer_BeforeCreate(t *testing.T) {
 
 	// ID should now be set
 	assert.NotEmpty(t, customer.ID)
-	
+
 	// Verify it's a valid UUID
 	_, err = uuid.Parse(customer.ID)
 	assert.NoError(t, err)
@@ -155,7 +155,7 @@ func TestSubscription_BeforeCreate(t *testing.T) {
 
 	// ID should now be set
 	assert.NotEmpty(t, subscription.ID)
-	
+
 	// Verify it's a valid UUID
 	_, err = uuid.Parse(subscription.ID)
 	assert.NoError(t, err)
@@ -242,7 +242,7 @@ func TestPayment_BeforeCreate(t *testing.T) {
 
 	// ID should now be set
 	assert.NotEmpty(t, payment.ID)
-	
+
 	// Verify it's a valid UUID
 	_, err = uuid.Parse(payment.ID)
 	assert.NoError(t, err)
@@ -285,11 +285,11 @@ func TestCustomer_Relationships(t *testing.T) {
 		UpdatedAt: now,
 		Subscriptions: []Subscription{
 			{
-				ID:         uuid.New().String(),
-				PriceID:    "price_123",
-				Status:     SubscriptionStatusActive,
-				CreatedAt:  now,
-				UpdatedAt:  now,
+				ID:        uuid.New().String(),
+				PriceID:   "price_123",
+				Status:    SubscriptionStatusActive,
+				CreatedAt: now,
+				UpdatedAt: now,
 			},
 		},
 		Payments: []Payment{

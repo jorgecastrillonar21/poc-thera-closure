@@ -1,6 +1,5 @@
 package services
 
-
 import (
 	"context"
 	"encoding/json"
@@ -507,7 +506,7 @@ func (s *paymentService) ConfirmPaymentIntent(ctx context.Context, paymentIntent
 func (s *paymentService) HandleWebhook(ctx context.Context, payload []byte, signature string) error {
 	// TODO: Get webhook secret from configuration
 	webhookSecret := "whsec_test_secret" // This should come from config
-	
+
 	// Construct and validate the webhook event
 	event, err := s.stripeClient.ConstructEvent(payload, signature, webhookSecret)
 	if err != nil {
@@ -547,7 +546,7 @@ func (s *paymentService) handlePaymentIntentSucceeded(ctx context.Context, event
 	if !ok {
 		return fmt.Errorf("invalid event data")
 	}
-	
+
 	object, ok := data["object"].(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("invalid event object")
@@ -579,7 +578,7 @@ func (s *paymentService) handlePaymentIntentFailed(ctx context.Context, event ma
 	if !ok {
 		return fmt.Errorf("invalid event data")
 	}
-	
+
 	object, ok := data["object"].(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("invalid event object")
@@ -619,7 +618,7 @@ func (s *paymentService) processInvoicePayment(ctx context.Context, event map[st
 	if !ok {
 		return fmt.Errorf("invalid event data")
 	}
-	
+
 	object, ok := data["object"].(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("invalid event object")
@@ -639,7 +638,7 @@ func (s *paymentService) processInvoicePayment(ctx context.Context, event map[st
 	// Create payment record for the invoice
 	amount, _ := object["amount_paid"].(float64)
 	currency, _ := object["currency"].(string)
-	
+
 	payment := &domain.Payment{
 		CustomerID:     subscription.CustomerID,
 		SubscriptionID: &subscription.ID,
@@ -671,7 +670,7 @@ func (s *paymentService) handleSubscriptionDeleted(ctx context.Context, event ma
 	if !ok {
 		return fmt.Errorf("invalid event data")
 	}
-	
+
 	object, ok := data["object"].(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("invalid event object")
@@ -702,7 +701,7 @@ func (s *paymentService) syncSubscriptionFromWebhook(ctx context.Context, event 
 	if !ok {
 		return fmt.Errorf("invalid event data")
 	}
-	
+
 	object, ok := data["object"].(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("invalid event object")

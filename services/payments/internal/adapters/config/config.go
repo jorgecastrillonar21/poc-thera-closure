@@ -26,10 +26,17 @@ type Config struct {
 
 	// Stripe configuration
 	Stripe struct {
-		PublicKey string `mapstructure:"public_key"`
-		SecretKey string `mapstructure:"secret_key"`
+		PublicKey     string `mapstructure:"public_key"`
+		SecretKey     string `mapstructure:"secret_key"`
 		WebhookSecret string `mapstructure:"webhook_secret"`
 	} `mapstructure:"stripe"`
+
+	// Redis configuration
+	Redis struct {
+		Address  string `mapstructure:"address"`
+		Password string `mapstructure:"password"`
+		DB       int    `mapstructure:"db"`
+	} `mapstructure:"redis"`
 
 	// CORS configuration
 	CORS struct {
@@ -61,6 +68,9 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("stripe.public_key", "pk_test_...")
 	viper.SetDefault("stripe.secret_key", "sk_test_...")
 	viper.SetDefault("stripe.webhook_secret", "whsec_...")
+	viper.SetDefault("redis.address", "") // Empty means Redis is optional
+	viper.SetDefault("redis.password", "")
+	viper.SetDefault("redis.db", 0)
 	viper.SetDefault("cors.allowed_origins", []string{"http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004"})
 	viper.SetDefault("cors.allowed_methods", []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	viper.SetDefault("cors.allowed_headers", []string{"Origin", "Content-Type", "Accept", "Authorization"})

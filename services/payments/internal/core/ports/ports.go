@@ -125,9 +125,9 @@ type CreateSubscriptionRequest struct {
 }
 
 type UpdateSubscriptionRequest struct {
-	PriceID  string                     `json:"price_id,omitempty"`
-	Status   domain.SubscriptionStatus  `json:"status,omitempty"`
-	CancelAt *int64                     `json:"cancel_at,omitempty"` // Unix timestamp
+	PriceID  string                    `json:"price_id,omitempty"`
+	Status   domain.SubscriptionStatus `json:"status,omitempty"`
+	CancelAt *int64                    `json:"cancel_at,omitempty"` // Unix timestamp
 }
 
 type ListSubscriptionsRequest struct {

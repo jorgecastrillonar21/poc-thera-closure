@@ -11,12 +11,12 @@ import (
 type SubscriptionStatus string
 
 const (
-	SubscriptionStatusActive    SubscriptionStatus = "active"
-	SubscriptionStatusCanceled  SubscriptionStatus = "canceled"
-	SubscriptionStatusTrialing  SubscriptionStatus = "trialing"
-	SubscriptionStatusPastDue   SubscriptionStatus = "past_due"
-	SubscriptionStatusUnpaid    SubscriptionStatus = "unpaid"
-	SubscriptionStatusPaused    SubscriptionStatus = "paused"
+	SubscriptionStatusActive   SubscriptionStatus = "active"
+	SubscriptionStatusCanceled SubscriptionStatus = "canceled"
+	SubscriptionStatusTrialing SubscriptionStatus = "trialing"
+	SubscriptionStatusPastDue  SubscriptionStatus = "past_due"
+	SubscriptionStatusUnpaid   SubscriptionStatus = "unpaid"
+	SubscriptionStatusPaused   SubscriptionStatus = "paused"
 )
 
 // PaymentStatus represents the status of a payment
@@ -32,16 +32,16 @@ const (
 
 // Customer represents a customer entity
 type Customer struct {
-	ID             string    `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	UserID         string    `json:"user_id" gorm:"type:uuid;not null;uniqueIndex"` // Reference to users service
-	StripeID       string    `json:"stripe_id" gorm:"uniqueIndex;size:255"`
-	Email          string    `json:"email" gorm:"not null;size:255"`
-	Name           string    `json:"name" gorm:"not null;size:255"`
-	DefaultPaymentMethodID string `json:"default_payment_method_id" gorm:"size:255"`
-	Active         bool      `json:"active" gorm:"default:true"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	DeletedAt      gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`
+	ID                     string         `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	UserID                 string         `json:"user_id" gorm:"type:uuid;not null;uniqueIndex"` // Reference to users service
+	StripeID               string         `json:"stripe_id" gorm:"uniqueIndex;size:255"`
+	Email                  string         `json:"email" gorm:"not null;size:255"`
+	Name                   string         `json:"name" gorm:"not null;size:255"`
+	DefaultPaymentMethodID string         `json:"default_payment_method_id" gorm:"size:255"`
+	Active                 bool           `json:"active" gorm:"default:true"`
+	CreatedAt              time.Time      `json:"created_at"`
+	UpdatedAt              time.Time      `json:"updated_at"`
+	DeletedAt              gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`
 
 	// Relationships
 	Subscriptions []Subscription `json:"subscriptions,omitempty" gorm:"foreignKey:CustomerID"`
@@ -68,30 +68,30 @@ type Subscription struct {
 	DeletedAt          gorm.DeletedAt     `json:"deleted_at,omitempty" gorm:"index"`
 
 	// Relationships
-	Customer Customer `json:"customer,omitempty" gorm:"foreignKey:CustomerID"`
+	Customer Customer  `json:"customer,omitempty" gorm:"foreignKey:CustomerID"`
 	Payments []Payment `json:"payments,omitempty" gorm:"foreignKey:SubscriptionID"`
 }
 
 // Payment represents a payment entity
 type Payment struct {
-	ID             string        `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	CustomerID     string        `json:"customer_id" gorm:"type:uuid;not null"`
-	SubscriptionID *string       `json:"subscription_id" gorm:"type:uuid"` // Optional for one-time payments
-	StripeID       string        `json:"stripe_id" gorm:"uniqueIndex;size:255"`
-	PaymentIntentID string       `json:"payment_intent_id" gorm:"size:255"`
-	Status         PaymentStatus `json:"status" gorm:"not null"`
-	Amount         int64         `json:"amount"` // Amount in cents
-	Currency       string        `json:"currency" gorm:"size:3;default:'usd'"`
-	Description    string        `json:"description" gorm:"size:500"`
-	Metadata       string        `json:"metadata" gorm:"type:jsonb"` // JSON metadata
-	ProcessedAt    *time.Time    `json:"processed_at"`
-	RefundedAt     *time.Time    `json:"refunded_at"`
-	CreatedAt      time.Time     `json:"created_at"`
-	UpdatedAt      time.Time     `json:"updated_at"`
-	DeletedAt      gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`
+	ID              string         `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	CustomerID      string         `json:"customer_id" gorm:"type:uuid;not null"`
+	SubscriptionID  *string        `json:"subscription_id" gorm:"type:uuid"` // Optional for one-time payments
+	StripeID        string         `json:"stripe_id" gorm:"uniqueIndex;size:255"`
+	PaymentIntentID string         `json:"payment_intent_id" gorm:"size:255"`
+	Status          PaymentStatus  `json:"status" gorm:"not null"`
+	Amount          int64          `json:"amount"` // Amount in cents
+	Currency        string         `json:"currency" gorm:"size:3;default:'usd'"`
+	Description     string         `json:"description" gorm:"size:500"`
+	Metadata        string         `json:"metadata" gorm:"type:jsonb"` // JSON metadata
+	ProcessedAt     *time.Time     `json:"processed_at"`
+	RefundedAt      *time.Time     `json:"refunded_at"`
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
+	DeletedAt       gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`
 
 	// Relationships
-	Customer     Customer     `json:"customer,omitempty" gorm:"foreignKey:CustomerID"`
+	Customer     Customer      `json:"customer,omitempty" gorm:"foreignKey:CustomerID"`
 	Subscription *Subscription `json:"subscription,omitempty" gorm:"foreignKey:SubscriptionID"`
 }
 
