@@ -158,8 +158,8 @@ down: ## Stop and remove containers (keeps data)
 # Complete cleanup
 clean: ## Stop all services and clean up containers, networks (keeps volumes)
 	@echo "$(BLUE)Cleaning up infrastructure...$(NC)"
-	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_SERVICES) down --remove-orphans
-	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_INFRA) down --remove-orphans
+	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_INFRA) -f $(COMPOSE_FILE_SERVICES) down --remove-orphans || true
+	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_INFRA) down --remove-orphans || true
 	@echo "$(GREEN)✓ Cleanup completed$(NC)"
 
 # Nuclear reset (removes everything including volumes)
@@ -207,15 +207,15 @@ redis-shell: ## Open Redis shell
 	@docker exec -it $(PROJECT_NAME)-redis redis-cli
 
 # Update main $(DOCKER_COMPOSE).yml to point to new structure
-update-main-compose: ## Update main $(DOCKER_COMPOSE).yml to use new structure
-	@echo "$(BLUE)Updating main $(DOCKER_COMPOSE).yml...$(NC)"
-	@echo "# TheraClosure Infrastructure" > $(DOCKER_COMPOSE).yml
-	@echo "# Use 'make setup' for complete infrastructure management" >> $(DOCKER_COMPOSE).yml
-	@echo "" >> $(DOCKER_COMPOSE).yml
-	@echo "# For development, use:" >> $(DOCKER_COMPOSE).yml
-	@echo "#   make infra    - Start core infrastructure" >> $(DOCKER_COMPOSE).yml
-	@echo "#   make services - Start application services" >> $(DOCKER_COMPOSE).yml
-	@echo "#   make setup    - Start everything" >> $(DOCKER_COMPOSE).yml
-	@echo "" >> $(DOCKER_COMPOSE).yml
-	@cat $(COMPOSE_FILE_INFRA) >> $(DOCKER_COMPOSE).yml
-	@echo "$(GREEN)✓ Main $(DOCKER_COMPOSE).yml updated$(NC)"
+update-main-compose: ## Database management
+pgadmin: ## Open pgAdmin web interface
+	@echo "$(BLUE)Opening pgAdmin...$(NC)"
+	@echo "$(YELLOW)pgAdmin is available at: http://localhost:5050$(NC)"
+	@echo "$(YELLOW)Email: admin@theraclosure.com$(NC)"
+	@echo "$(YELLOW)Password: admin123$(NC)"
+	@echo "$(YELLOW)Pre-configured databases:$(NC)"
+	@echo "  - theraclosure (main)"
+	@echo "  - theraclosure_auth"  
+	@echo "  - theraclosure_users"
+	@echo "  - theraclosure_payments"
+	@echo "  - theraclosure_core"

@@ -1,6 +1,6 @@
 # TheraClosure - Professional Practice Closure Platform
 
-A comprehensive full-stack web application for helping therapists close their practices with dignity, care, and professional integrity. Built with modern microservices architecture using Go, React, and containerized deployment.
+A comprehensive full-stack web application for helping therapists close their practices with dignity, care, and professional integrity. Built with modern microservices architecture using Go, React, and enterprise-grade containerized infrastructure.
 
 ## 🏗️ Architecture Overview
 
@@ -9,13 +9,18 @@ A comprehensive full-stack web application for helping therapists close their pr
 theraclosure-web-app/
 ├── frontend/                 # React + Vite + TypeScript + Material-UI
 ├── services/
-│   ├── auth/                # Authentication service (Go/Gin)
+│   ├── auth/                # Authentication service (Go/Gin) ✅ RUNNING
 │   ├── users/               # User management service (Go/Gin)
 │   ├── payments/            # Stripe integration service (Go/Gin)
 │   └── core/                # API Gateway service (Go/Gin)
 ├── shared/                  # Shared TypeScript interfaces/DTOs
 ├── infra/                   # Infrastructure configurations
-├── docker-compose.yml       # Multi-service orchestration
+│   ├── docker/              # Docker Compose files
+│   │   ├── docker-compose.infrastructure.yml
+│   │   └── services/docker-compose.services.yml
+│   ├── migrations/          # Database migrations
+│   └── pgadmin/             # pgAdmin configuration
+├── Makefile                 # Enterprise infrastructure management
 └── README.md
 ```
 
@@ -39,47 +44,98 @@ theraclosure-web-app/
 - **Stripe** for payment processing
 
 #### Infrastructure
-- **Docker Compose** for local development
-- **PostgreSQL 15** with multiple databases
+- **Docker Compose** for orchestrated services
+- **PostgreSQL 15** with specialized databases
 - **Redis 7** for caching and sessions
+- **pgAdmin 4** for database management
 - **Mailhog** for email testing
-- **NGINX** for reverse proxy (optional)
+- **Enterprise Makefile** for infrastructure management
 
-## 🚀 Quick Start
+## �️ Database Architecture
+
+### Multi-Database Design
+Each microservice has its own dedicated database following Domain-Driven Design principles:
+
+#### **`theraclosure_auth`** 🔐 Authentication Service
+- `users` - User accounts, authentication credentials, roles (ADMIN, THERAPIST, STAFF)
+- `sessions` - JWT session management, refresh tokens with SHA-256 hashing
+
+#### **`theraclosure_users`** 👥 User Management Service  
+- `user_profiles` - Extended profile data, licenses, specializations, practice info
+- `enrollment_data` - Multi-step onboarding progress tracking
+
+#### **`theraclosure_payments`** 💳 Payment Processing Service
+- `subscriptions` - Stripe subscription management, billing cycles
+- `payment_events` - Webhook events, payment history, transaction logs
+
+#### **`theraclosure_core`** 🎯 Core Gateway Service
+- `templates` - Email/document templates for client notifications
+- `support_tickets` - Customer support and help desk system
+
+#### **`theraclosure`** 📊 Main Database (Reserved)
+*Currently empty - reserved for future cross-service data, global configuration, or system-wide audit logs*
+
+### Database Management
+- **pgAdmin**: http://localhost:5050 
+  - **Email**: `admin@theraclosure.com`
+  - **Password**: `admin123`  
+  - **Pre-configured** with all 5 databases
+  - **Auto-authentication** via pgpass file
+
+## �🚀 Quick Start
 
 ### Prerequisites
-- Docker and Docker Compose
+- Docker and Docker Compose v2+
 - Git
 - Node.js 18+ (for frontend development)
-- Go 1.21+ (for backend development)
+- Go 1.23+ (for backend development)
 
 ### 1. Clone and Setup
 ```bash
 git clone <repository-url>
 cd theraclosure-web-app
-
-# Copy environment files
-cp frontend/.env.local.example frontend/.env.local
-cp services/auth/.env.example services/auth/.env
-# Edit the environment files with your configurations
 ```
 
-### 2. Start All Services
+### 2. Enterprise Infrastructure Management
 ```bash
-# Build and start all services
-docker-compose up --build
+# Complete infrastructure setup (recommended)
+make setup
 
-# Or start in detached mode
-docker-compose up -d --build
+# Or step by step:
+make infra      # Start core infrastructure (PostgreSQL, Redis, etc.)
+make migrate    # Run database migrations  
+make services   # Start application services (auth, users, etc.)
 ```
 
-### 3. Access the Application
-- **Frontend**: http://localhost:3000
-- **API Gateway**: http://localhost:8080
-- **Mailhog UI**: http://localhost:8025
-- **Auth Service**: http://localhost:3001
+### 3. Development Workflow
+```bash
+# Infrastructure management
+make help       # Show all available commands
+make status     # Check service status  
+make health     # Health check all services
+make logs       # View logs from all services
+make clean      # Clean shutdown
+
+# Service-specific operations
+make auth       # Start only auth service
+make build-auth # Build auth service image
+make logs-auth  # View auth service logs
+```
+
+### 4. Access the Application
+
+#### **Frontend & APIs**
+- **Frontend App**: http://localhost:3000 ✅ 
+- **Auth Service**: http://localhost:3001 ✅ 
 - **Users Service**: http://localhost:3002
-- **Payments Service**: http://localhost:3003
+- **Payments Service**: http://localhost:3003  
+- **Core Gateway**: http://localhost:8080
+
+#### **Infrastructure Services**
+- **pgAdmin (Database Management)**: http://localhost:5050 ✅
+- **MailHog (Email Testing)**: http://localhost:8025 ✅
+- **PostgreSQL**: localhost:5432 ✅
+- **Redis**: localhost:6379 ✅
 
 ### 4. Default Admin Login
 ```

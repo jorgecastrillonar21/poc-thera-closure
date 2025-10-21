@@ -7,16 +7,9 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Coverage from './pages/Coverage'
 import HowWeWork from './pages/HowWeWork'
-import Retirement from './pages/Retirement'
-import Testimonials from './pages/Testimonials'
-import FAQ from './pages/FAQ'
-import Contact from './pages/Contact'
+import { Retirement, Testimonials, FAQ, Contact, Enrollment, Templates, Billing, Support } from './pages/AllPages'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import Enrollment from './pages/Enrollment'
-import Templates from './pages/Templates'
-import Billing from './pages/Billing'
-import Support from './pages/Support'
 
 const App: React.FC = () => {
   return (

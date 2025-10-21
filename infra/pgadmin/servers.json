@@ -1,0 +1,32 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "TheraClosure PostgreSQL",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "theraclosure",
+      "Username": "theraclosure",
+      "UseSSHTunnel": 0,
+      "TunnelPort": "22",
+      "TunnelAuthentication": 0,
+      "KerberosAuthentication": false,
+      "ConnectionParameters": {
+        "sslmode": "prefer",
+        "connect_timeout": 10,
+        "sslcert": "<STORAGE_DIR>/.postgresql/postgresql.crt",
+        "sslkey": "<STORAGE_DIR>/.postgresql/postgresql.key",
+        "sslrootcert": "<STORAGE_DIR>/.postgresql/root.crt",
+        "sslcrl": "<STORAGE_DIR>/.postgresql/root.crl",
+        "sslcompression": 0,
+        "bgcolor": null,
+        "fgcolor": null,
+        "service": null,
+        "passfile": null
+      },
+      "SharedPreferencesName": "TheraClosure",
+      "PassFile": "/var/lib/pgadmin/pgpass",
+      "DBRestriction": "theraclosure,theraclosure_auth,theraclosure_users,theraclosure_payments,theraclosure_core"
+    }
+  }
+}

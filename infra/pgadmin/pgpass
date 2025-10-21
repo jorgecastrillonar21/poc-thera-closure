@@ -1,0 +1,5 @@
+postgres:5432:theraclosure:theraclosure:password123
+postgres:5432:theraclosure_auth:theraclosure:password123
+postgres:5432:theraclosure_users:theraclosure:password123
+postgres:5432:theraclosure_payments:theraclosure:password123
+postgres:5432:theraclosure_core:theraclosure:password123
