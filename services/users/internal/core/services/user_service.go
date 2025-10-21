@@ -116,10 +116,6 @@ func (s *userService) ListProfiles(ctx context.Context, limit, offset int) ([]*d
 
 // ValidateProfile validates a user profile
 func (s *userService) ValidateProfile(ctx context.Context, profile *domain.UserProfile) error {
-	if profile.UserID == uuid.Nil {
-		return fmt.Errorf("user ID is required")
-	}
-	
 	if strings.TrimSpace(profile.FirstName) == "" {
 		return fmt.Errorf("first name is required")
 	}

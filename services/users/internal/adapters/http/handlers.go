@@ -22,6 +22,11 @@ func (s *Server) createProfile(c *gin.Context) {
 		return
 	}
 
+	// Auto-generate UserID if not provided
+	if profile.UserID == uuid.Nil {
+		profile.UserID = uuid.New()
+	}
+
 	if err := s.userService.CreateProfile(c.Request.Context(), &profile); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to create profile",
@@ -72,8 +77,18 @@ func (s *Server) updateProfile(c *gin.Context) {
 		return
 	}
 
-	var profile domain.UserProfile
-	if err := c.ShouldBindJSON(&profile); err != nil {
+	// Get the existing profile first
+	existingProfile, err := s.userService.GetProfile(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":   "Profile not found",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Bind the JSON to the existing profile
+	if err := c.ShouldBindJSON(existingProfile); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Invalid request body",
 			"details": err.Error(),
@@ -81,10 +96,10 @@ func (s *Server) updateProfile(c *gin.Context) {
 		return
 	}
 
-	// Ensure the user ID matches
-	profile.UserID = userID
+	// Ensure the user ID and ID remain unchanged
+	existingProfile.UserID = userID
 
-	if err := s.userService.UpdateProfile(c.Request.Context(), &profile); err != nil {
+	if err := s.userService.UpdateProfile(c.Request.Context(), existingProfile); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to update profile",
 			"details": err.Error(),
@@ -94,7 +109,7 @@ func (s *Server) updateProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Profile updated successfully",
-		"profile": profile,
+		"profile": existingProfile,
 	})
 }
 
@@ -117,9 +132,7 @@ func (s *Server) deleteProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Profile deleted successfully",
-	})
+	c.Status(http.StatusNoContent)
 }
 
 // listProfiles handles listing user profiles with pagination
@@ -152,11 +165,16 @@ func (s *Server) listProfiles(c *gin.Context) {
 		return
 	}
 
+	// Get total count (simplified - in production this would be optimized)
+	totalProfiles, _ := s.userService.ListProfiles(c.Request.Context(), 1000000, 0) // Large number to get all
+	totalCount := len(totalProfiles)
+
 	c.JSON(http.StatusOK, gin.H{
 		"profiles": profiles,
 		"limit":    limit,
 		"offset":   offset,
 		"count":    len(profiles),
+		"total":    totalCount,
 	})
 }
 

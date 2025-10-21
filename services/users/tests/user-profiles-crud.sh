@@ -34,47 +34,41 @@ extract_json_field() {
     echo $1 | grep -o "\"$2\":\"[^\"]*" | cut -d'"' -f4
 }
 
+# Function to extract numeric field from JSON
+extract_json_number() {
+    echo $1 | grep -o "\"$2\":[0-9]*" | cut -d':' -f2
+}
+
 # Test 1: Create User Profile
 echo ""
 print_status "INFO" "Testing user profile creation..."
 
 create_payload='{
-  "firstName": "Dr. Jane",
-  "lastName": "Smith",
+  "first_name": "Dr. Jane",
+  "last_name": "Smith",
   "email": "jane.smith@therapist.com",
-  "phoneNumber": "+1-555-0123",
-  "dateOfBirth": "1985-06-15",
-  "gender": "female",
-  "licenseNumber": "LIC123456",
-  "licenseState": "CA",
-  "licenseExpiryDate": "2025-12-31",
-  "specialties": ["anxiety", "depression", "trauma"],
-  "yearsOfExperience": 8,
-  "education": "Ph.D. Clinical Psychology, Stanford University",
-  "certifications": ["CBT Certified", "EMDR Trained"],
-  "practiceName": "Mindful Therapy Center",
-  "practiceAddress": "123 Main St, San Francisco, CA 94102",
-  "practicePhone": "+1-555-0456",
-  "practiceWebsite": "https://mindfultherapy.com",
-  "acceptsInsurance": true,
-  "insuranceNetworks": ["Anthem", "Kaiser", "Blue Cross"],
-  "sessionTypes": ["individual", "couples", "group"],
-  "onlineSessionsAvailable": true,
-  "languagesSpoken": ["English", "Spanish"],
-  "bio": "Experienced therapist specializing in anxiety and depression with a compassionate approach."
+  "phone": "+1-555-0123",
+  "date_of_birth": "1985-06-15T00:00:00Z",
+  "license_number": "LIC123456",
+  "license_state": "CA",
+  "license_expiration": "2025-12-31T00:00:00Z",
+  "years_of_experience": 8,
+  "practice_name": "Mindful Therapy Center",
+  "practice_address": "123 Main St, San Francisco, CA 94102",
+  "practice_phone": "+1-555-0456"
 }'
 
 response=$(curl -s -w "HTTPSTATUS:%{http_code}" -X POST \
   -H "Content-Type: application/json" \
   -d "$create_payload" \
-  $SERVICE_URL/api/users/profiles)
+  $SERVICE_URL/api/v1/users/profiles)
 
 http_code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
 body=$(echo $response | sed -E 's/HTTPSTATUS:[0-9]{3}$//')
 
 if [ "$http_code" = "201" ]; then
     print_status "PASS" "User profile created successfully"
-    USER_ID=$(extract_json_field "$body" "id")
+    USER_ID=$(extract_json_field "$body" "user_id")
     echo "Created User ID: $USER_ID"
     echo "Response: $body"
 else
@@ -86,13 +80,13 @@ fi
 echo ""
 print_status "INFO" "Testing get user profile by ID..."
 
-response=$(curl -s -w "HTTPSTATUS:%{http_code}" $SERVICE_URL/api/users/profiles/$USER_ID)
+response=$(curl -s -w "HTTPSTATUS:%{http_code}" $SERVICE_URL/api/v1/users/profiles/$USER_ID)
 http_code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
 body=$(echo $response | sed -E 's/HTTPSTATUS:[0-9]{3}$//')
 
 if [ "$http_code" = "200" ]; then
     print_status "PASS" "Successfully retrieved user profile"
-    firstName=$(extract_json_field "$body" "firstName")
+    firstName=$(extract_json_field "$body" "first_name")
     email=$(extract_json_field "$body" "email")
     echo "Retrieved: $firstName ($email)"
 else
@@ -105,26 +99,25 @@ echo ""
 print_status "INFO" "Testing user profile update..."
 
 update_payload='{
-  "firstName": "Dr. Jane",
-  "lastName": "Smith-Johnson",
+  "first_name": "Dr. Jane",
+  "last_name": "Smith-Johnson",
   "email": "jane.smith@therapist.com",
-  "phoneNumber": "+1-555-0124",
-  "yearsOfExperience": 9,
-  "bio": "Experienced therapist specializing in anxiety, depression, and trauma with a compassionate, evidence-based approach."
+  "phone": "+1-555-0124",
+  "years_of_experience": 9
 }'
 
 response=$(curl -s -w "HTTPSTATUS:%{http_code}" -X PUT \
   -H "Content-Type: application/json" \
   -d "$update_payload" \
-  $SERVICE_URL/api/users/profiles/$USER_ID)
+  $SERVICE_URL/api/v1/users/profiles/$USER_ID)
 
 http_code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
 body=$(echo $response | sed -E 's/HTTPSTATUS:[0-9]{3}$//')
 
 if [ "$http_code" = "200" ]; then
     print_status "PASS" "User profile updated successfully"
-    lastName=$(extract_json_field "$body" "lastName")
-    yearsExp=$(extract_json_field "$body" "yearsOfExperience")
+    lastName=$(extract_json_field "$body" "last_name")
+    yearsExp=$(extract_json_number "$body" "years_of_experience")
     echo "Updated lastName: $lastName, Years Experience: $yearsExp"
 else
     print_status "FAIL" "Failed to update user profile. Status: $http_code"
@@ -135,7 +128,7 @@ fi
 echo ""
 print_status "INFO" "Testing list user profiles with pagination..."
 
-response=$(curl -s -w "HTTPSTATUS:%{http_code}" "$SERVICE_URL/api/users/profiles?page=1&limit=10")
+response=$(curl -s -w "HTTPSTATUS:%{http_code}" "$SERVICE_URL/api/v1/users/profiles?page=1&limit=10")
 http_code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
 body=$(echo $response | sed -E 's/HTTPSTATUS:[0-9]{3}$//')
 
@@ -152,7 +145,7 @@ fi
 echo ""
 print_status "INFO" "Testing search user profiles..."
 
-response=$(curl -s -w "HTTPSTATUS:%{http_code}" "$SERVICE_URL/api/users/profiles/search?q=anxiety&specialties=anxiety")
+response=$(curl -s -w "HTTPSTATUS:%{http_code}" "$SERVICE_URL/api/v1/users/profiles/search?q=anxiety&specialties=anxiety")
 http_code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
 body=$(echo $response | sed -E 's/HTTPSTATUS:[0-9]{3}$//')
 
@@ -168,7 +161,7 @@ fi
 echo ""
 print_status "INFO" "Testing user profile deletion..."
 
-response=$(curl -s -w "HTTPSTATUS:%{http_code}" -X DELETE $SERVICE_URL/api/users/profiles/$USER_ID)
+response=$(curl -s -w "HTTPSTATUS:%{http_code}" -X DELETE $SERVICE_URL/api/v1/users/profiles/$USER_ID)
 http_code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
 
 if [ "$http_code" = "204" ]; then
@@ -181,7 +174,7 @@ fi
 echo ""
 print_status "INFO" "Verifying user profile deletion..."
 
-response=$(curl -s -w "HTTPSTATUS:%{http_code}" $SERVICE_URL/api/users/profiles/$USER_ID)
+response=$(curl -s -w "HTTPSTATUS:%{http_code}" $SERVICE_URL/api/v1/users/profiles/$USER_ID)
 http_code=$(echo $response | tr -d '\n' | sed -E 's/.*HTTPSTATUS:([0-9]{3})$/\1/')
 
 if [ "$http_code" = "404" ]; then
