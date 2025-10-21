@@ -3,10 +3,180 @@ import { Container, Typography, Box, Grid, TextField, Button } from '@mui/materi
 import { Link } from 'react-router-dom'
 
 const Retirement: React.FC = () => (
-  <Container maxWidth="lg" sx={{ py: 4 }}>
-    <Typography variant="h4" component="h1" gutterBottom>Retirement Planning</Typography>
-    <Typography variant="body1">Retirement closure planning and transition services.</Typography>
-  </Container>
+  <>
+    {/* Hero Section */}
+    <Box
+      sx={{
+        background: 'linear-gradient(135deg, #2C5F5D 0%, #4A8B8A 100%)',
+        color: 'white',
+        py: { xs: 6, md: 8 },
+        textAlign: 'center',
+      }}
+    >
+      <Container maxWidth="lg">
+        <Typography 
+          variant="h2" 
+          sx={{ 
+            fontWeight: 600, 
+            mb: 3,
+            fontSize: { xs: '2rem', md: '3rem' }
+          }}
+        >
+          Retirement Planning Services
+        </Typography>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            opacity: 0.9,
+            maxWidth: '600px',
+            mx: 'auto'
+          }}
+        >
+          Protecting your legacy while ensuring seamless client care transition
+        </Typography>
+      </Container>
+    </Box>
+
+    {/* Main Content */}
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={8}>
+          <Typography variant="h4" gutterBottom sx={{ color: 'primary.main' }}>
+            Your Professional Legacy Matters
+          </Typography>
+          
+          <Typography variant="body1" paragraph>
+            As you approach retirement, you've dedicated years to providing compassionate care to your clients. 
+            TheraClosure ensures that your practice closure is handled with the same level of professionalism 
+            and care that has defined your career.
+          </Typography>
+
+          <Typography variant="h5" gutterBottom sx={{ mt: 4, color: 'primary.main' }}>
+            What's Included in Our Retirement Services
+          </Typography>
+
+          <Box component="ul" sx={{ pl: 2 }}>
+            <Typography component="li" variant="body1" paragraph>
+              <strong>Comprehensive Closure Planning:</strong> We work with you to create a detailed plan 
+              for transitioning your clients and closing your practice ethically and legally.
+            </Typography>
+            <Typography component="li" variant="body1" paragraph>
+              <strong>Client Notification Services:</strong> Professional communication to all clients 
+              about your retirement and their options for continued care.
+            </Typography>
+            <Typography component="li" variant="body1" paragraph>
+              <strong>Records Management:</strong> Secure transfer or storage of client records in 
+              compliance with state regulations and ethical guidelines.
+            </Typography>
+            <Typography component="li" variant="body1" paragraph>
+              <strong>Referral Coordination:</strong> Assistance in connecting clients with qualified 
+              therapists who match their specific needs and therapeutic approach.
+            </Typography>
+            <Typography component="li" variant="body1" paragraph>
+              <strong>Legal Compliance:</strong> Ensuring all aspects of your practice closure meet 
+              professional licensing requirements and ethical standards.
+            </Typography>
+          </Box>
+
+          <Typography variant="body1" paragraph sx={{ mt: 4 }}>
+            Our goal is to provide you with peace of mind that you have closed your practice with 
+            the same degree of conscientiousness, ethical compliance, and compassion with which you 
+            provided care for so many years. We assist you in enjoying a full retirement while 
+            protecting your professional legacy.
+          </Typography>
+
+          <Box sx={{ mt: 4 }}>
+            <Button
+              component={Link}
+              to="/contact"
+              variant="contained"
+              size="large"
+              sx={{ 
+                mr: 2,
+                mb: 2,
+                backgroundColor: 'primary.main',
+                '&:hover': { backgroundColor: 'primary.dark' }
+              }}
+            >
+              Schedule Retirement Consultation
+            </Button>
+            <Button
+              component={Link}
+              to="/coverage"
+              variant="outlined"
+              size="large"
+              sx={{ mb: 2 }}
+            >
+              View Coverage Plans
+            </Button>
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} md={4}>
+          <Box
+            sx={{
+              p: 3,
+              backgroundColor: 'secondary.main',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'grey.200'
+            }}
+          >
+            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>
+              Planning Timeline
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              <strong>6-12 Months Before:</strong> Initial consultation and planning
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              <strong>3-6 Months Before:</strong> Client notifications and referral coordination
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              <strong>1-3 Months Before:</strong> Records transfer and final preparations
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              <strong>Retirement Date:</strong> Final closure and ongoing record management
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              p: 3,
+              mt: 3,
+              backgroundColor: '#f8f9fa',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'grey.200'
+            }}
+          >
+            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>
+              Why Choose TheraClosure?
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              ✓ Founded by licensed psychotherapists
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              ✓ Deep understanding of ethical obligations
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              ✓ Compliance with all state regulations
+            </Typography>
+            
+            <Typography variant="body2" paragraph>
+              ✓ Compassionate client communication
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
+  </>
 )
 
 const Testimonials: React.FC = () => (
