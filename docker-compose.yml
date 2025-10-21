@@ -1,0 +1,227 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: theraclosure-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: theraclosure
+      POSTGRES_USER: theraclosure
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - theraclosure-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U theraclosure"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: theraclosure-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - theraclosure-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Mailhog for development email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: theraclosure-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    networks:
+      - theraclosure-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: theraclosure-auth-service
+    restart: unless-stopped
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=theraclosure
+      - DB_PASSWORD=password123
+      - DB_NAME=theraclosure_auth
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - GIN_MODE=debug
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - theraclosure-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Users Service
+  users-service:
+    build:
+      context: ./services/users
+      dockerfile: Dockerfile
+    container_name: theraclosure-users-service
+    restart: unless-stopped
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=theraclosure
+      - DB_PASSWORD=password123
+      - DB_NAME=theraclosure_users
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - GIN_MODE=debug
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - theraclosure-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Payments Service
+  payments-service:
+    build:
+      context: ./services/payments
+      dockerfile: Dockerfile
+    container_name: theraclosure-payments-service
+    restart: unless-stopped
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=theraclosure
+      - DB_PASSWORD=password123
+      - DB_NAME=theraclosure_payments
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+      - STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+      - GIN_MODE=debug
+    ports:
+      - "3003:3003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - theraclosure-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3003/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Core Gateway Service
+  core-service:
+    build:
+      context: ./services/core
+      dockerfile: Dockerfile
+    container_name: theraclosure-core-service
+    restart: unless-stopped
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - USERS_SERVICE_URL=http://users-service:3002
+      - PAYMENTS_SERVICE_URL=http://payments-service:3003
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - GIN_MODE=debug
+    ports:
+      - "8080:8080"
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      users-service:
+        condition: service_healthy
+      payments-service:
+        condition: service_healthy
+    networks:
+      - theraclosure-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend React Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: theraclosure-frontend
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+      - VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+    ports:
+      - "3000:3000"
+    depends_on:
+      - core-service
+    networks:
+      - theraclosure-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  # NGINX Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: theraclosure-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+      - core-service
+    networks:
+      - theraclosure-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  theraclosure-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16

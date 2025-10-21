@@ -1,0 +1,19 @@
+{
+  "name": "@theraclosure/shared",
+  "version": "1.0.0",
+  "description": "Shared DTOs and types for TheraClosure services",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.0"
+  },
+  "peerDependencies": {
+    "class-validator": "^0.14.0",
+    "class-transformer": "^0.5.1"
+  }
+}
