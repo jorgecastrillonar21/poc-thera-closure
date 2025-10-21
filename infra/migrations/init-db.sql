@@ -3,6 +3,7 @@ CREATE DATABASE theraclosure_auth;
 CREATE DATABASE theraclosure_users;
 CREATE DATABASE theraclosure_payments;
 CREATE DATABASE theraclosure_core;
+CREATE DATABASE theraclosure_geolocation;
 
 -- Create users table in auth database
 \c theraclosure_auth;
@@ -214,5 +215,67 @@ Best regards,
 [CONTACT_INFO]',
     'referral',
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'
-)
+);
+
+-- Create geolocation database schema
+\c theraclosure_geolocation;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "postgis";
+
+-- Countries table
+CREATE TABLE IF NOT EXISTS countries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(3) UNIQUE NOT NULL,
+    code2 VARCHAR(2) UNIQUE NOT NULL,
+    region VARCHAR(50),
+    currency VARCHAR(10),
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- States table
+CREATE TABLE IF NOT EXISTS states (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    country_id UUID NOT NULL REFERENCES countries(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(10),
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Cities table
+CREATE TABLE IF NOT EXISTS cities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    state_id UUID NOT NULL REFERENCES states(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    zip_code VARCHAR(20),
+    latitude DECIMAL(10,8),
+    longitude DECIMAL(11,8),
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create indexes for better performance
+CREATE INDEX idx_countries_code ON countries(code);
+CREATE INDEX idx_countries_code2 ON countries(code2);
+CREATE INDEX idx_countries_active ON countries(active);
+CREATE INDEX idx_countries_deleted_at ON countries(deleted_at);
+
+CREATE INDEX idx_states_country_id ON states(country_id);
+CREATE INDEX idx_states_active ON states(active);
+CREATE INDEX idx_states_deleted_at ON states(deleted_at);
+
+CREATE INDEX idx_cities_state_id ON cities(state_id);
+CREATE INDEX idx_cities_zip_code ON cities(zip_code);
+CREATE INDEX idx_cities_active ON cities(active);
+CREATE INDEX idx_cities_deleted_at ON cities(deleted_at);
+CREATE INDEX idx_cities_location ON cities(latitude, longitude);
 ON CONFLICT DO NOTHING;

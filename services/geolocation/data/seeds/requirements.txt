@@ -1,0 +1,23 @@
+# TheraClosure Geolocation Service - Comprehensive World Data Seeder
+# Using multiple data sources for complete geographic coverage
+
+# Core libraries
+requests>=2.31.0
+
+# Geographic data libraries
+pycountry>=22.3.0          # ISO country and subdivision data
+pycountry-convert>=0.7.2   # Country name conversions
+
+# Enhanced city data (optional for richer datasets)
+geonamescache>=2.0.0       # Offline cities database (fallback for GeoNames API)
+# geopy>=2.3.0             # Geographic calculations (advanced features)
+
+# Data processing
+pandas>=2.0.0              # Data manipulation and CSV export
+
+# Progress tracking
+tqdm>=4.65.0               # Progress bars
+
+# Optional: Additional geographic APIs (uncomment if needed)
+# googlemaps>=4.10.0        # Google Maps API (requires API key)
+# opencage>=2.2.0           # OpenCage Geocoder (requires API key)

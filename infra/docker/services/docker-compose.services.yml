@@ -82,6 +82,54 @@ services:
       retries: 5
       start_period: 40s
 
+  # Geolocation Microservice
+  geolocation-service:
+    build:
+      context: ../../services/geolocation
+      dockerfile: Dockerfile
+    container_name: theraclosure-geolocation-service
+    restart: unless-stopped
+    environment:
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: theraclosure
+      DB_PASSWORD: password123
+      DB_NAME: theraclosure_geolocation
+      DB_SSL_MODE: disable
+      
+      # Server Configuration
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 3003
+      SERVER_MODE: release
+      
+      # Application Configuration
+      APP_NAME: theraclosure-geolocation-service
+      APP_VERSION: 1.0.0
+      APP_LOG_LEVEL: info
+      
+      # World Data Seeding Configuration
+      SEED_DATA: "true"
+      GEONAMES_USERNAME: demo
+    ports:
+      - "3003:3003"
+    networks:
+      - theraclosure-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - geolocation_data:/app/data
+
+volumes:
+  geolocation_data:
+
 networks:
   theraclosure-network:
     external: true

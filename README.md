@@ -11,7 +11,7 @@ theraclosure-web-app/
 ├── services/
 │   ├── auth/                # Authentication service (Go/Gin) ✅ DOCKERIZED
 │   ├── users/               # User management service (Go/Gin) ✅ DOCKERIZED
-│   ├── geolocation/         # Countries/States/Cities service (Go/Gin) 🚧 PLANNED
+│   ├── geolocation/         # World geographic data service (Go/Gin) ✅ BUILT + DATA SEEDED
 │   ├── payments/            # Stripe integration service (Go/Gin) 📋 PLANNED
 │   └── core/                # API Gateway service (Go/Gin + ActiveMQ) 📋 PLANNED
 ├── shared/                  # Shared TypeScript interfaces/DTOs
@@ -42,7 +42,7 @@ theraclosure-web-app/
 - **Redis** for sessions and caching
 - **ActiveMQ** for pub/sub messaging between services
 - **JWT** for authentication and authorization
-- **Geolocation API** for countries/states/cities data
+- **Comprehensive Geolocation Service** with complete world data (250+ countries, 3000+ subdivisions, major cities)
 - **Stripe** for payment processing and subscriptions
 
 #### Infrastructure
@@ -97,6 +97,12 @@ Each microservice has its own dedicated database following Domain-Driven Design 
 #### **`theraclosure_users`** 👥 User Management Service  
 - `user_profiles` - Extended profile data, licenses, specializations, practice info
 - `enrollment_data` - Multi-step onboarding progress tracking
+
+#### **`theraclosure_geolocation`** 🌍 Geolocation Service
+- `countries` - Complete world countries (250+) with ISO codes, regions, currencies
+- `states` - Global subdivisions (3000+) including states, provinces, regions, departments
+- `cities` - Major world cities with coordinates, population data, postal codes
+- **Pre-populated** via comprehensive automated data seeding system
 
 #### **`theraclosure_payments`** 💳 Payment Processing Service
 - `subscriptions` - Stripe subscription management, billing cycles
@@ -268,6 +274,67 @@ GET  /api/v1/auth/cognito/login # Initiate Cognito SSO
 - **Persistence Adapters** - GORM database repositories  
 - **External Adapters** - Stripe, AWS Cognito integrations
 
+## 🌍 Geolocation Service - Comprehensive World Data
+
+### World Geographic Database
+The Geolocation Service provides complete global geographic data with a sophisticated automated seeding system:
+
+#### **Data Coverage**
+- **250+ Countries**: All UN recognized countries with ISO 3166-1 standards
+  - Official names, 2-letter (US) and 3-letter (USA) codes
+  - Regions, subregions, currencies, capitals
+  - Population and area data
+  
+- **3000+ Subdivisions**: States, provinces, regions using ISO 3166-2
+  - US states (50 states + DC)
+  - Canadian provinces and territories (13)
+  - German states, French regions, etc.
+  - Administrative divisions for all countries
+  
+- **Major World Cities**: Comprehensive metropolitan areas
+  - Population data and coordinates
+  - Postal/ZIP codes
+  - Global distribution across all continents
+
+#### **Automated Data Seeding System**
+```bash
+# Navigate to geolocation service
+cd services/geolocation/data/seeds
+
+# Run comprehensive world data seeding
+./run_seeder.sh --full
+
+# Or run specific data types
+./run_seeder.sh --countries-only          # 250+ countries
+./run_seeder.sh --subdivisions-only       # 3000+ subdivisions  
+./run_seeder.sh --cities-only             # Major cities
+```
+
+#### **Data Sources (Fully Automated)**
+1. **pycountry Library**: Official ISO 3166 standards for countries and subdivisions
+2. **REST Countries API**: Enhanced metadata (currencies, regions, capitals, population)
+3. **GeoNames API**: Major world cities with population thresholds
+4. **geonamescache Library**: Offline city database for reliability
+5. **Hardcoded Fallbacks**: Only used if all APIs fail
+
+#### **API Endpoints**
+```
+GET  /api/v1/countries                    # List all countries
+GET  /api/v1/countries/{id}              # Get country details
+GET  /api/v1/countries/{id}/states       # Get states/provinces
+GET  /api/v1/states/{id}/cities          # Get cities in state
+POST /api/v1/bulk/countries              # Bulk insert countries
+POST /api/v1/bulk/states                 # Bulk insert subdivisions
+POST /api/v1/bulk/cities                 # Bulk insert cities
+```
+
+#### **Integration Benefits**
+- **Practice Registration**: Accurate location selection for therapists
+- **License Validation**: State-specific professional licensing requirements  
+- **Service Areas**: Geographic coverage for therapy services
+- **Billing Addresses**: International address validation
+- **Analytics**: Geographic distribution of user base
+
 ## 🐳 Docker Services
 
 ### Service Dependencies
@@ -278,7 +345,11 @@ Frontend → Core Gateway → Auth/Users/Geolocation/Payments Services → Postg
 ### Current Service Status
 - ✅ **Auth Service**: JWT authentication, session management (Dockerized)
 - ✅ **Users Service**: User profiles, enrollment workflow (Dockerized) 
-- 🚧 **Geolocation Service**: Countries/States/Cities management (Planned)
+- ✅ **Geolocation Service**: Complete world geographic data with comprehensive seeding system (Built)
+  - 250+ countries using ISO 3166 standards
+  - 3000+ subdivisions (states, provinces, regions) 
+  - Major world cities with coordinates and population data
+  - Fully automated data seeding from multiple APIs (GeoNames, REST Countries, pycountry)
 - 📋 **Payments Service**: Stripe integration, subscriptions (Planned)
 - 📋 **Core Gateway**: API Gateway with ActiveMQ messaging (Planned)
 
