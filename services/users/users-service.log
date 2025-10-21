@@ -1,0 +1,246 @@
+nohup: no se tendrá en cuenta la entrada
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[9.613ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND table_type = 'BASE TABLE'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.451ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[19.653ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'theraclosure_users' AND table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[2.324ms] [34;1m[rows:-][0m SELECT * FROM "user_profiles" LIMIT 5
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[16.158ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_catalog, table_name, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'theraclosure_users' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'user_profiles' AND constraint_type = 'UNIQUE'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[14.387ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_catalog, table_name, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'theraclosure_users' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'user_profiles'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.679ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'user_profiles'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[5.162ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[4.704ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'user_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[3.605ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'first_name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[4.078ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'last_name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[4.562ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[4.104ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.088ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'date_of_birth') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.312ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'address') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.121ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'city') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.493ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'state') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.446ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'zip_code') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.568ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'country') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.865ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'license_number') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.867ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'license_state') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.415ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'license_expiration') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.996ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'professional_title') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.590ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'specializations') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.546ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'years_of_experience') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.831ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'practice_name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.848ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'practice_type') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.267ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'practice_address') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.098ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'practice_city') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.901ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'practice_state') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.507ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'practice_zip_code') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.501ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'practice_phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.686ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'emergency_contact_name') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.019ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'emergency_contact_phone') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.002ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'emergency_contact_email') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.057ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'profile_complete') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.894ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'status') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.561ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'created_at') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.598ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'updated_at') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.682ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'user_profiles' AND column_name = 'deleted_at') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'user_profiles' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[5.874ms] [34;1m[rows:1][0m SELECT count(*) FROM pg_indexes WHERE tablename = 'user_profiles' AND indexname = 'idx_user_profiles_user_id' AND schemaname = CURRENT_SCHEMA()
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.868ms] [34;1m[rows:1][0m SELECT count(*) FROM pg_indexes WHERE tablename = 'user_profiles' AND indexname = 'idx_user_profiles_email' AND schemaname = CURRENT_SCHEMA()
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[2.338ms] [34;1m[rows:1][0m SELECT count(*) FROM pg_indexes WHERE tablename = 'user_profiles' AND indexname = 'idx_user_profiles_deleted_at' AND schemaname = CURRENT_SCHEMA()
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[2.150ms] [34;1m[rows:1][0m SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND table_type = 'BASE TABLE'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.223ms] [34;1m[rows:1][0m SELECT CURRENT_DATABASE()
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[9.212ms] [34;1m[rows:-][0m SELECT c.column_name, c.is_nullable = 'YES', c.udt_name, c.character_maximum_length, c.numeric_precision, c.numeric_precision_radix, c.numeric_scale, c.datetime_precision, 8 * typlen, c.column_default, pd.description, c.identity_increment FROM information_schema.columns AS c JOIN pg_type AS pgt ON c.udt_name = pgt.typname LEFT JOIN pg_catalog.pg_description as pd ON pd.objsubid = c.ordinal_position AND pd.objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = c.table_name AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = c.table_schema)) where table_catalog = 'theraclosure_users' AND table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[2.016ms] [34;1m[rows:-][0m SELECT * FROM "enrollment_data" LIMIT 5
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[14.310ms] [34;1m[rows:-][0m SELECT constraint_name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_catalog, table_name, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'theraclosure_users' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'enrollment_data' AND constraint_type = 'UNIQUE'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[14.342ms] [34;1m[rows:-][0m SELECT c.column_name, constraint_name, constraint_type FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_catalog, table_name, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type IN ('PRIMARY KEY', 'UNIQUE') AND c.table_catalog = 'theraclosure_users' AND c.table_schema = CURRENT_SCHEMA() AND c.table_name = 'enrollment_data'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.061ms] [34;1m[rows:-][0m SELECT a.attname as column_name, format_type(a.atttypid, a.atttypmod) AS data_type
+		FROM pg_attribute a JOIN pg_class b ON a.attrelid = b.oid AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA())
+		WHERE a.attnum > 0 -- hide internal columns
+		AND NOT a.attisdropped -- hide deleted columns
+		AND b.relname = 'enrollment_data'
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.987ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.216ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'user_id') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.231ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'personal_info_complete') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.983ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'licensure_details_complete') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.853ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'practice_info_complete') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.097ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'admin_setup_complete') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.119ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'schedule_config_complete') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.461ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'enrollment_status') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.526ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'current_step') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.697ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'total_steps') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.991ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'completion_date') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.097ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'selected_plan') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.221ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'payment_status') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.059ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'preferred_contact_method') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.739ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'referral_source') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.638ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'special_requests') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.745ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'created_at') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.881ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'updated_at') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[0.949ms] [34;1m[rows:0][0m SELECT description FROM pg_catalog.pg_description WHERE objsubid = (SELECT ordinal_position FROM information_schema.columns WHERE table_schema = CURRENT_SCHEMA() AND table_name = 'enrollment_data' AND column_name = 'deleted_at') AND objoid = (SELECT oid FROM pg_catalog.pg_class WHERE relname = 'enrollment_data' AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = CURRENT_SCHEMA()))
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[2.569ms] [34;1m[rows:1][0m SELECT count(*) FROM pg_indexes WHERE tablename = 'enrollment_data' AND indexname = 'idx_enrollment_data_user_id' AND schemaname = CURRENT_SCHEMA()
+
+2025/10/21 15:28:31 [32m/home/jorge-castrillon/Documentos/projects/pocs/thera-closure/web-app/services/users/internal/adapters/persistence/database.go:40
+[0m[33m[1.761ms] [34;1m[rows:1][0m SELECT count(*) FROM pg_indexes WHERE tablename = 'enrollment_data' AND indexname = 'idx_enrollment_data_deleted_at' AND schemaname = CURRENT_SCHEMA()
+2025/10/21 15:28:31 Database connected and migrated successfully
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /health                   --> theraclosure/users-service/internal/adapters/http.(*Server).healthCheck-fm (4 handlers)
+[GIN-debug] POST   /api/v1/users/profiles    --> theraclosure/users-service/internal/adapters/http.(*Server).createProfile-fm (4 handlers)
+[GIN-debug] GET    /api/v1/users/profiles/:userId --> theraclosure/users-service/internal/adapters/http.(*Server).getProfile-fm (4 handlers)
+[GIN-debug] PUT    /api/v1/users/profiles/:userId --> theraclosure/users-service/internal/adapters/http.(*Server).updateProfile-fm (4 handlers)
+[GIN-debug] DELETE /api/v1/users/profiles/:userId --> theraclosure/users-service/internal/adapters/http.(*Server).deleteProfile-fm (4 handlers)
+[GIN-debug] GET    /api/v1/users/profiles    --> theraclosure/users-service/internal/adapters/http.(*Server).listProfiles-fm (4 handlers)
+[GIN-debug] GET    /api/v1/users/profiles/search --> theraclosure/users-service/internal/adapters/http.(*Server).searchProfiles-fm (4 handlers)
+[GIN-debug] POST   /api/v1/enrollments/start --> theraclosure/users-service/internal/adapters/http.(*Server).startEnrollment-fm (4 handlers)
+[GIN-debug] GET    /api/v1/enrollments/:userId --> theraclosure/users-service/internal/adapters/http.(*Server).getEnrollment-fm (4 handlers)
+[GIN-debug] PUT    /api/v1/enrollments/:userId --> theraclosure/users-service/internal/adapters/http.(*Server).updateEnrollment-fm (4 handlers)
+[GIN-debug] POST   /api/v1/enrollments/:userId/steps/:step/complete --> theraclosure/users-service/internal/adapters/http.(*Server).completeStep-fm (4 handlers)
+[GIN-debug] GET    /api/v1/enrollments/:userId/progress --> theraclosure/users-service/internal/adapters/http.(*Server).getProgress-fm (4 handlers)
+[GIN-debug] POST   /api/v1/enrollments/:userId/complete --> theraclosure/users-service/internal/adapters/http.(*Server).completeEnrollment-fm (4 handlers)
+[GIN-debug] PUT    /api/v1/enrollments/:userId/plan --> theraclosure/users-service/internal/adapters/http.(*Server).updatePlan-fm (4 handlers)
+2025/10/21 15:28:31 Users service starting on 0.0.0.0:3002
+[GIN] 2025/10/21 - 15:28:38 | 200 |      46.147µs |             ::1 | GET      "/health"
+[GIN] 2025/10/21 - 15:33:49 | 200 |      82.574µs |             ::1 | GET      "/health"
