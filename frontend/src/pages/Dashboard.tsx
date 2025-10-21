@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Typography, Box, Card, CardContent, Grid } from '@mui/material'
+import { Container, Typography, Card, CardContent, Grid } from '@mui/material'
 
 const Dashboard: React.FC = () => {
   return (

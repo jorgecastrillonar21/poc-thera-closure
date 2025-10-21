@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
-import { UserDTO, AuthResponseDTO, LoginDTO, RegisterDTO } from '@theraclosure/shared'
-import { authService } from '../services/authService'
+import { UserDTO, LoginDTO, RegisterDTO, authService } from '../services/authService'
 import Cookies from 'js-cookie'
 
 interface AuthState {

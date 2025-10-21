@@ -316,7 +316,7 @@ func (s *Server) logout(c *gin.Context) {
 	// But we need to get the session ID from the token, so let's accept it in request body as backup
 	var req LogoutRequest
 	var sessionID uuid.UUID
-	
+
 	if err := c.ShouldBindJSON(&req); err == nil && req.SessionID != "" {
 		sessionID, err = uuid.Parse(req.SessionID)
 		if err != nil {

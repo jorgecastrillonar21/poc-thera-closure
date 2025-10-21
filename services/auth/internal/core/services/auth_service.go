@@ -168,7 +168,7 @@ func (s *AuthService) Login(ctx context.Context, req *domain.AuthRequest) (*doma
 func (s *AuthService) RefreshToken(ctx context.Context, req *domain.RefreshRequest) (*domain.TokenPair, error) {
 	// Hash the incoming refresh token to find the session
 	refreshTokenHash := s.hashToken(req.RefreshToken)
-	
+
 	// Get session by refresh token hash
 	session, err := s.sessionRepo.GetByRefreshTokenHash(ctx, refreshTokenHash)
 	if err != nil {

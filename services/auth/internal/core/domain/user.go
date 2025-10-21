@@ -69,8 +69,8 @@ type Session struct {
 
 // TokenPair represents an access token and refresh token pair
 type TokenPair struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
+	AccessToken    string `json:"accessToken"`
+	RefreshToken   string `json:"refreshToken"`
 	AccessTokenJTI string `json:"-"` // JWT ID for access token tracking
 }
 

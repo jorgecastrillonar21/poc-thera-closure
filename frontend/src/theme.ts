@@ -41,32 +41,32 @@ export const theme = createTheme({
     h1: {
       fontSize: '2.5rem',
       fontWeight: 700,
-      color: colors.primary.main,
+      color: colors.text.primary, // Changed to dark text color
     },
     h2: {
       fontSize: '2rem',
       fontWeight: 600,
-      color: colors.primary.main,
+      color: colors.text.primary, // Changed to dark text color
     },
     h3: {
       fontSize: '1.5rem',
       fontWeight: 600,
-      color: colors.primary.main,
+      color: colors.text.primary, // Changed to dark text color
     },
     h4: {
       fontSize: '1.25rem',
       fontWeight: 500,
-      color: colors.primary.main,
+      color: colors.text.primary, // Changed to dark text color
     },
     h5: {
       fontSize: '1.125rem',
       fontWeight: 500,
-      color: colors.primary.main,
+      color: colors.text.primary, // Changed to dark text color
     },
     h6: {
       fontSize: '1rem',
       fontWeight: 500,
-      color: colors.primary.main,
+      color: colors.text.primary, // Changed to dark text color
     },
     body1: {
       fontSize: '1rem',

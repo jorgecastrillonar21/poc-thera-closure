@@ -40,7 +40,7 @@ func (s *JWTService) GenerateTokenPair(ctx context.Context, user *domain.User, s
 
 	// Generate unique JTI for access token
 	accessJTI := uuid.New().String()
-	
+
 	// Generate access token
 	accessClaims := &CustomClaims{
 		UserID:    user.ID,

@@ -1,6 +1,35 @@
 import axios, { AxiosResponse } from 'axios'
-import { UserDTO, LoginDTO, RegisterDTO, AuthResponseDTO } from '@theraclosure/shared'
 import Cookies from 'js-cookie'
+
+// Define DTOs directly here for now
+export interface UserDTO {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  role?: string
+  isActive?: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface LoginDTO {
+  email: string
+  password: string
+}
+
+export interface RegisterDTO {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+}
+
+export interface AuthResponseDTO {
+  user: UserDTO
+  accessToken: string
+  refreshToken: string
+}
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
 
@@ -51,7 +80,7 @@ apiClient.interceptors.response.use(
 class AuthService {
   async login(credentials: LoginDTO): Promise<AuthResponseDTO> {
     const response: AxiosResponse<AuthResponseDTO> = await apiClient.post('/auth/login', credentials)
-    const { accessToken, refreshToken, user } = response.data
+    const { accessToken, refreshToken } = response.data
     
     // Store tokens in cookies
     Cookies.set('accessToken', accessToken, { expires: 1 }) // 1 day

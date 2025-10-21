@@ -33,7 +33,7 @@ func (r *SessionRepository) GetByID(ctx context.Context, sessionID uuid.UUID) (*
 	err := r.db.WithContext(ctx).
 		Where("id = ? AND is_active = ? AND expires_at > ?", sessionID, true, time.Now()).
 		First(&session).Error
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (r *SessionRepository) GetByRefreshTokenHash(ctx context.Context, tokenHash
 	err := r.db.WithContext(ctx).
 		Where("refresh_token_hash = ? AND is_active = ? AND expires_at > ?", tokenHash, true, time.Now()).
 		First(&session).Error
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (r *SessionRepository) GetByAccessTokenJTI(ctx context.Context, jti string)
 	err := r.db.WithContext(ctx).
 		Where("access_token_jti = ? AND is_active = ? AND expires_at > ?", jti, true, time.Now()).
 		First(&session).Error
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (r *SessionRepository) GetByUserID(ctx context.Context, userID uuid.UUID) (
 		Where("user_id = ? AND is_active = ? AND expires_at > ?", userID, true, time.Now()).
 		Order("created_at DESC").
 		Find(&sessions).Error
-	
+
 	return sessions, err
 }
 
@@ -105,7 +105,7 @@ func (r *SessionRepository) CleanupExpired(ctx context.Context) (int64, error) {
 	result := r.db.WithContext(ctx).
 		Where("expires_at < ? OR is_active = ?", time.Now(), false).
 		Delete(&domain.Session{})
-	
+
 	return result.RowsAffected, result.Error
 }
 
