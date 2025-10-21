@@ -21,11 +21,15 @@ type UserRepository interface {
 // SessionRepository defines the interface for session management
 type SessionRepository interface {
 	Create(ctx context.Context, session *domain.Session) error
-	Get(ctx context.Context, sessionID string) (*domain.Session, error)
+	GetByID(ctx context.Context, sessionID uuid.UUID) (*domain.Session, error)
+	GetByRefreshTokenHash(ctx context.Context, tokenHash string) (*domain.Session, error)
+	GetByAccessTokenJTI(ctx context.Context, jti string) (*domain.Session, error)
 	GetByUserID(ctx context.Context, userID uuid.UUID) ([]*domain.Session, error)
-	Delete(ctx context.Context, sessionID string) error
+	Update(ctx context.Context, session *domain.Session) error
+	Delete(ctx context.Context, sessionID uuid.UUID) error
 	DeleteByUserID(ctx context.Context, userID uuid.UUID) error
-	DeleteExpired(ctx context.Context) error
+	InvalidateByID(ctx context.Context, sessionID uuid.UUID) error
+	CleanupExpired(ctx context.Context) (int64, error)
 }
 
 // AuthService defines the interface for authentication business logic
@@ -33,7 +37,7 @@ type AuthService interface {
 	Register(ctx context.Context, req *domain.RegisterRequest) (*domain.AuthResponse, error)
 	Login(ctx context.Context, req *domain.AuthRequest) (*domain.AuthResponse, error)
 	RefreshToken(ctx context.Context, req *domain.RefreshRequest) (*domain.TokenPair, error)
-	Logout(ctx context.Context, sessionID string) error
+	Logout(ctx context.Context, sessionID uuid.UUID) error
 	ValidateToken(ctx context.Context, token string) (*domain.User, error)
 	InitiateCognitoLogin(ctx context.Context) (string, error)
 	HandleCognitoCallback(ctx context.Context, code, state string) (*domain.AuthResponse, error)
@@ -66,7 +70,7 @@ type CognitoTokens struct {
 
 // JWTService defines the interface for JWT token operations
 type JWTService interface {
-	GenerateTokenPair(ctx context.Context, user *domain.User) (*domain.TokenPair, error)
+	GenerateTokenPair(ctx context.Context, user *domain.User, sessionID uuid.UUID) (*domain.TokenPair, error)
 	ValidateAccessToken(ctx context.Context, token string) (*JWTClaims, error)
 	ValidateRefreshToken(ctx context.Context, token string) (*JWTClaims, error)
 }
@@ -76,7 +80,7 @@ type JWTClaims struct {
 	UserID    uuid.UUID       `json:"user_id"`
 	Email     string          `json:"email"`
 	Role      domain.UserRole `json:"role"`
-	SessionID string          `json:"session_id"`
+	SessionID uuid.UUID       `json:"session_id"`
 	Type      string          `json:"type"` // "access" or "refresh"
 }
 

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"theraclosure/auth-service/internal/adapters/config"
@@ -45,6 +46,12 @@ func NewAuthService(
 	}
 }
 
+// hashToken creates a SHA-256 hash of a token for secure storage
+func (s *AuthService) hashToken(token string) string {
+	hash := sha256.Sum256([]byte(token))
+	return fmt.Sprintf("%x", hash)
+}
+
 // Register creates a new user account
 func (s *AuthService) Register(ctx context.Context, req *domain.RegisterRequest) (*domain.AuthResponse, error) {
 	// Check if user already exists
@@ -76,20 +83,26 @@ func (s *AuthService) Register(ctx context.Context, req *domain.RegisterRequest)
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	// Generate tokens
-	tokens, err := s.jwtService.GenerateTokenPair(ctx, user)
+	// Create session first
+	session := &domain.Session{
+		ID:        uuid.New(),
+		UserID:    user.ID,
+		IsActive:  true,
+		ExpiresAt: time.Now().Add(s.config.JWT.RefreshTokenDuration),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		// UserAgent and IPAddress will be set by HTTP handler if available
+	}
+
+	// Generate tokens with session ID
+	tokens, err := s.jwtService.GenerateTokenPair(ctx, user, session.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
-	// Create session
-	session := &domain.Session{
-		ID:           uuid.New().String(),
-		UserID:       user.ID,
-		RefreshToken: tokens.RefreshToken,
-		ExpiresAt:    time.Now().Add(s.config.JWT.RefreshTokenDuration),
-		CreatedAt:    time.Now(),
-	}
+	// Update session with token hashes
+	session.RefreshTokenHash = s.hashToken(tokens.RefreshToken)
+	session.AccessTokenJTI = tokens.AccessTokenJTI
 
 	if err := s.sessionRepo.Create(ctx, session); err != nil {
 		return nil, fmt.Errorf("failed to create session: %w", err)
@@ -119,20 +132,26 @@ func (s *AuthService) Login(ctx context.Context, req *domain.AuthRequest) (*doma
 		return nil, ErrInvalidCredentials
 	}
 
-	// Generate tokens
-	tokens, err := s.jwtService.GenerateTokenPair(ctx, user)
+	// Create session first
+	session := &domain.Session{
+		ID:        uuid.New(),
+		UserID:    user.ID,
+		IsActive:  true,
+		ExpiresAt: time.Now().Add(s.config.JWT.RefreshTokenDuration),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		// UserAgent and IPAddress will be set by HTTP handler if available
+	}
+
+	// Generate tokens with session ID
+	tokens, err := s.jwtService.GenerateTokenPair(ctx, user, session.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
-	// Create session
-	session := &domain.Session{
-		ID:           uuid.New().String(),
-		UserID:       user.ID,
-		RefreshToken: tokens.RefreshToken,
-		ExpiresAt:    time.Now().Add(s.config.JWT.RefreshTokenDuration),
-		CreatedAt:    time.Now(),
-	}
+	// Update session with token hashes
+	session.RefreshTokenHash = s.hashToken(tokens.RefreshToken)
+	session.AccessTokenJTI = tokens.AccessTokenJTI
 
 	if err := s.sessionRepo.Create(ctx, session); err != nil {
 		return nil, fmt.Errorf("failed to create session: %w", err)
@@ -147,24 +166,24 @@ func (s *AuthService) Login(ctx context.Context, req *domain.AuthRequest) (*doma
 
 // RefreshToken generates new tokens using a refresh token
 func (s *AuthService) RefreshToken(ctx context.Context, req *domain.RefreshRequest) (*domain.TokenPair, error) {
-	// Validate refresh token
+	// Hash the incoming refresh token to find the session
+	refreshTokenHash := s.hashToken(req.RefreshToken)
+	
+	// Get session by refresh token hash
+	session, err := s.sessionRepo.GetByRefreshTokenHash(ctx, refreshTokenHash)
+	if err != nil {
+		return nil, ErrInvalidToken
+	}
+
+	// Validate refresh token JWT
 	claims, err := s.jwtService.ValidateRefreshToken(ctx, req.RefreshToken)
 	if err != nil {
 		return nil, ErrInvalidToken
 	}
 
-	// Get session
-	session, err := s.sessionRepo.Get(ctx, claims.SessionID)
-	if err != nil {
+	// Ensure session ID matches
+	if session.ID != claims.SessionID {
 		return nil, ErrInvalidToken
-	}
-
-	if session.RefreshToken != req.RefreshToken {
-		return nil, ErrInvalidToken
-	}
-
-	if time.Now().After(session.ExpiresAt) {
-		return nil, ErrTokenExpired
 	}
 
 	// Get user
@@ -173,17 +192,19 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *domain.RefreshReque
 		return nil, ErrUserNotFound
 	}
 
-	// Generate new tokens
-	tokens, err := s.jwtService.GenerateTokenPair(ctx, user)
+	// Generate new tokens with existing session ID
+	tokens, err := s.jwtService.GenerateTokenPair(ctx, user, session.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
-	// Update session with new refresh token
-	session.RefreshToken = tokens.RefreshToken
+	// Update session with new token hashes
+	session.RefreshTokenHash = s.hashToken(tokens.RefreshToken)
+	session.AccessTokenJTI = tokens.AccessTokenJTI
 	session.ExpiresAt = time.Now().Add(s.config.JWT.RefreshTokenDuration)
+	session.UpdatedAt = time.Now()
 
-	if err := s.sessionRepo.Create(ctx, session); err != nil {
+	if err := s.sessionRepo.Update(ctx, session); err != nil {
 		return nil, fmt.Errorf("failed to update session: %w", err)
 	}
 
@@ -191,8 +212,8 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *domain.RefreshReque
 }
 
 // Logout invalidates a user session
-func (s *AuthService) Logout(ctx context.Context, sessionID string) error {
-	return s.sessionRepo.Delete(ctx, sessionID)
+func (s *AuthService) Logout(ctx context.Context, sessionID uuid.UUID) error {
+	return s.sessionRepo.InvalidateByID(ctx, sessionID)
 }
 
 // ValidateToken validates an access token and returns the user

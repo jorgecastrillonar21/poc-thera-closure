@@ -53,21 +53,25 @@ func (u *User) BeforeCreate() error {
 	return nil
 }
 
-// Session represents a user session
+// Session represents a user session stored in PostgreSQL
 type Session struct {
-	ID           string    `json:"id"`
-	UserID       uuid.UUID `json:"userId"`
-	RefreshToken string    `json:"refreshToken"`
-	UserAgent    string    `json:"userAgent"`
-	IPAddress    string    `json:"ipAddress"`
-	ExpiresAt    time.Time `json:"expiresAt"`
-	CreatedAt    time.Time `json:"createdAt"`
+	ID               uuid.UUID `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	UserID           uuid.UUID `json:"userId" gorm:"type:uuid;not null;index"`
+	RefreshTokenHash string    `json:"-" gorm:"not null;unique_index"` // Hashed refresh token
+	AccessTokenJTI   string    `json:"-" gorm:"not null;unique_index"` // JWT ID for access token
+	UserAgent        *string   `json:"userAgent" gorm:"type:text"`     // Nullable
+	IPAddress        *string   `json:"ipAddress" gorm:"type:inet"`     // Nullable
+	IsActive         bool      `json:"isActive" gorm:"not null;default:true;index"`
+	ExpiresAt        time.Time `json:"expiresAt" gorm:"not null;index"`
+	CreatedAt        time.Time `json:"createdAt" gorm:"not null;default:now()"`
+	UpdatedAt        time.Time `json:"updatedAt" gorm:"not null;default:now()"`
 }
 
 // TokenPair represents an access token and refresh token pair
 type TokenPair struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
+	AccessTokenJTI string `json:"-"` // JWT ID for access token tracking
 }
 
 // AuthRequest represents a login request

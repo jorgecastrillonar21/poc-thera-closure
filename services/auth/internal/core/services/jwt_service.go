@@ -17,7 +17,7 @@ type CustomClaims struct {
 	UserID    uuid.UUID       `json:"user_id"`
 	Email     string          `json:"email"`
 	Role      domain.UserRole `json:"role"`
-	SessionID string          `json:"session_id"`
+	SessionID uuid.UUID       `json:"session_id"`
 	Type      string          `json:"type"` // "access" or "refresh"
 	jwt.RegisteredClaims
 }
@@ -35,10 +35,12 @@ func NewJWTService(config *config.Config) ports.JWTService {
 }
 
 // GenerateTokenPair generates access and refresh tokens for a user
-func (s *JWTService) GenerateTokenPair(ctx context.Context, user *domain.User) (*domain.TokenPair, error) {
-	sessionID := uuid.New().String()
+func (s *JWTService) GenerateTokenPair(ctx context.Context, user *domain.User, sessionID uuid.UUID) (*domain.TokenPair, error) {
 	now := time.Now()
 
+	// Generate unique JTI for access token
+	accessJTI := uuid.New().String()
+	
 	// Generate access token
 	accessClaims := &CustomClaims{
 		UserID:    user.ID,
@@ -47,6 +49,7 @@ func (s *JWTService) GenerateTokenPair(ctx context.Context, user *domain.User) (
 		SessionID: sessionID,
 		Type:      "access",
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        accessJTI,
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(s.config.JWT.AccessTokenDuration)),
 		},
@@ -78,8 +81,9 @@ func (s *JWTService) GenerateTokenPair(ctx context.Context, user *domain.User) (
 	}
 
 	return &domain.TokenPair{
-		AccessToken:  accessTokenString,
-		RefreshToken: refreshTokenString,
+		AccessToken:    accessTokenString,
+		RefreshToken:   refreshTokenString,
+		AccessTokenJTI: accessJTI,
 	}, nil
 }
 

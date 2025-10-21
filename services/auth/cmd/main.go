@@ -5,7 +5,6 @@ import (
 	"theraclosure/auth-service/internal/adapters/config"
 	"theraclosure/auth-service/internal/adapters/http"
 	"theraclosure/auth-service/internal/adapters/persistence"
-	"theraclosure/auth-service/internal/adapters/redis"
 	"theraclosure/auth-service/internal/core/services"
 )
 
@@ -42,15 +41,9 @@ func main() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	// Initialize Redis
-	redisClient, err := redis.NewRedisClient(cfg)
-	if err != nil {
-		log.Fatal("Failed to connect to Redis:", err)
-	}
-
 	// Initialize repositories (adapters)
 	userRepo := persistence.NewUserRepository(db)
-	sessionRepo := redis.NewSessionRepository(redisClient)
+	sessionRepo := persistence.NewSessionRepository(db)
 
 	// Initialize domain services (core)
 	authService := services.NewAuthService(userRepo, sessionRepo, cfg)

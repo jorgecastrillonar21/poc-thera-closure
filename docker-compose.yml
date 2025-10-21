@@ -1,3 +1,11 @@
+# TheraClosure Infrastructure
+# Use 'make setup' for complete infrastructure management
+
+# For development, use:
+#   make infra    - Start core infrastructure
+#   make services - Start application services
+#   make setup    - Start everything
+
 services:
   # PostgreSQL Database
   postgres:
