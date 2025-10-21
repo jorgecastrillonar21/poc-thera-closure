@@ -1,6 +1,5 @@
 package services
 
-
 import (
 	"context"
 	"fmt"
@@ -30,25 +29,25 @@ func (s *userService) CreateProfile(ctx context.Context, profile *domain.UserPro
 	if err := s.ValidateProfile(ctx, profile); err != nil {
 		return fmt.Errorf("profile validation failed: %w", err)
 	}
-	
+
 	// Check if user already exists
 	existing, err := s.userRepo.GetByUserID(ctx, profile.UserID)
 	if err == nil && existing != nil {
 		return fmt.Errorf("profile already exists for user %s", profile.UserID.String())
 	}
-	
+
 	// Create the profile
 	if err := s.userRepo.Create(ctx, profile); err != nil {
 		return fmt.Errorf("failed to create profile: %w", err)
 	}
-	
+
 	// Check if profile is complete and update accordingly
 	isComplete, _ := s.CheckProfileCompletion(ctx, profile.UserID)
 	if isComplete {
 		profile.ProfileComplete = true
 		s.userRepo.MarkProfileComplete(ctx, profile.UserID)
 	}
-	
+
 	return nil
 }
 
@@ -58,7 +57,7 @@ func (s *userService) GetProfile(ctx context.Context, userID uuid.UUID) (*domain
 	if err != nil {
 		return nil, fmt.Errorf("failed to get profile: %w", err)
 	}
-	
+
 	return profile, nil
 }
 
@@ -68,18 +67,18 @@ func (s *userService) UpdateProfile(ctx context.Context, profile *domain.UserPro
 	if err := s.ValidateProfile(ctx, profile); err != nil {
 		return fmt.Errorf("profile validation failed: %w", err)
 	}
-	
+
 	// Update the profile
 	if err := s.userRepo.Update(ctx, profile); err != nil {
 		return fmt.Errorf("failed to update profile: %w", err)
 	}
-	
+
 	// Check if profile is now complete
 	isComplete, _ := s.CheckProfileCompletion(ctx, profile.UserID)
 	if isComplete && !profile.ProfileComplete {
 		s.userRepo.MarkProfileComplete(ctx, profile.UserID)
 	}
-	
+
 	return nil
 }
 
@@ -89,11 +88,11 @@ func (s *userService) DeleteProfile(ctx context.Context, userID uuid.UUID) error
 	if err != nil {
 		return fmt.Errorf("profile not found: %w", err)
 	}
-	
+
 	if err := s.userRepo.Delete(ctx, profile.ID); err != nil {
 		return fmt.Errorf("failed to delete profile: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -105,12 +104,12 @@ func (s *userService) ListProfiles(ctx context.Context, limit, offset int) ([]*d
 	if limit > 100 {
 		limit = 100 // Maximum limit
 	}
-	
+
 	profiles, err := s.userRepo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list profiles: %w", err)
 	}
-	
+
 	return profiles, nil
 }
 
@@ -119,20 +118,20 @@ func (s *userService) ValidateProfile(ctx context.Context, profile *domain.UserP
 	if strings.TrimSpace(profile.FirstName) == "" {
 		return fmt.Errorf("first name is required")
 	}
-	
+
 	if strings.TrimSpace(profile.LastName) == "" {
 		return fmt.Errorf("last name is required")
 	}
-	
+
 	if strings.TrimSpace(profile.Email) == "" {
 		return fmt.Errorf("email is required")
 	}
-	
+
 	// Validate email format (basic validation)
 	if !strings.Contains(profile.Email, "@") {
 		return fmt.Errorf("invalid email format")
 	}
-	
+
 	return nil
 }
 
@@ -142,7 +141,7 @@ func (s *userService) CheckProfileCompletion(ctx context.Context, userID uuid.UU
 	if err != nil {
 		return false, fmt.Errorf("failed to get profile: %w", err)
 	}
-	
+
 	// Define completion criteria
 	required := []string{
 		profile.FirstName,
@@ -152,18 +151,18 @@ func (s *userService) CheckProfileCompletion(ctx context.Context, userID uuid.UU
 		profile.LicenseState,
 		profile.ProfessionalTitle,
 	}
-	
+
 	for _, field := range required {
 		if strings.TrimSpace(field) == "" {
 			return false, nil
 		}
 	}
-	
+
 	// Check if practice information is complete
 	if profile.PracticeType == "" || profile.PracticeName == "" {
 		return false, nil
 	}
-	
+
 	return true, nil
 }
 
@@ -175,16 +174,16 @@ func (s *userService) SearchProfiles(ctx context.Context, query string, limit, o
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var filtered []*domain.UserProfile
 	query = strings.ToLower(strings.TrimSpace(query))
-	
+
 	for _, profile := range profiles {
 		if s.matchesQuery(profile, query) {
 			filtered = append(filtered, profile)
 		}
 	}
-	
+
 	return filtered, nil
 }
 
@@ -195,14 +194,14 @@ func (s *userService) GetProfilesByStatus(ctx context.Context, status string, li
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var filtered []*domain.UserProfile
 	for _, profile := range profiles {
 		if profile.Status == status {
 			filtered = append(filtered, profile)
 		}
 	}
-	
+
 	return filtered, nil
 }
 
@@ -215,12 +214,12 @@ func (s *userService) matchesQuery(profile *domain.UserProfile, query string) bo
 		strings.ToLower(profile.PracticeName),
 		strings.ToLower(profile.LicenseNumber),
 	}
-	
+
 	for _, field := range searchFields {
 		if strings.Contains(field, query) {
 			return true
 		}
 	}
-	
+
 	return false
 }

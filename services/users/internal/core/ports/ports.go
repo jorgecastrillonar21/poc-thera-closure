@@ -1,6 +1,5 @@
 package ports
 
-
 import (
 	"context"
 	"theraclosure/users-service/internal/core/domain"
@@ -18,7 +17,7 @@ type UserProfileRepository interface {
 	Update(ctx context.Context, profile *domain.UserProfile) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, limit, offset int) ([]*domain.UserProfile, error)
-	
+
 	// Profile status operations
 	UpdateStatus(ctx context.Context, userID uuid.UUID, status string) error
 	MarkProfileComplete(ctx context.Context, userID uuid.UUID) error
@@ -32,7 +31,7 @@ type EnrollmentRepository interface {
 	GetByUserID(ctx context.Context, userID uuid.UUID) (*domain.EnrollmentData, error)
 	Update(ctx context.Context, enrollment *domain.EnrollmentData) error
 	Delete(ctx context.Context, id uuid.UUID) error
-	
+
 	// Enrollment progress operations
 	UpdateStep(ctx context.Context, userID uuid.UUID, step int, completed bool) error
 	UpdateEnrollmentStatus(ctx context.Context, userID uuid.UUID, status string) error
@@ -48,11 +47,11 @@ type UserService interface {
 	UpdateProfile(ctx context.Context, profile *domain.UserProfile) error
 	DeleteProfile(ctx context.Context, userID uuid.UUID) error
 	ListProfiles(ctx context.Context, limit, offset int) ([]*domain.UserProfile, error)
-	
+
 	// Profile validation and completion
 	ValidateProfile(ctx context.Context, profile *domain.UserProfile) error
 	CheckProfileCompletion(ctx context.Context, userID uuid.UUID) (bool, error)
-	
+
 	// Search and filtering
 	SearchProfiles(ctx context.Context, query string, limit, offset int) ([]*domain.UserProfile, error)
 	GetProfilesByStatus(ctx context.Context, status string, limit, offset int) ([]*domain.UserProfile, error)
@@ -64,16 +63,16 @@ type EnrollmentService interface {
 	StartEnrollment(ctx context.Context, userID uuid.UUID, selectedPlan string) error
 	GetEnrollment(ctx context.Context, userID uuid.UUID) (*domain.EnrollmentData, error)
 	UpdateEnrollment(ctx context.Context, enrollment *domain.EnrollmentData) error
-	
+
 	// Step management
 	CompleteStep(ctx context.Context, userID uuid.UUID, step int) error
 	GetCurrentStep(ctx context.Context, userID uuid.UUID) (int, error)
 	GetProgress(ctx context.Context, userID uuid.UUID) (float64, error) // percentage completion
-	
+
 	// Enrollment completion
 	CompleteEnrollment(ctx context.Context, userID uuid.UUID) error
 	ValidateEnrollmentCompletion(ctx context.Context, userID uuid.UUID) error
-	
+
 	// Plan management
 	UpdateSelectedPlan(ctx context.Context, userID uuid.UUID, plan string) error
 	GetUsersbyPlan(ctx context.Context, plan string, limit, offset int) ([]*domain.EnrollmentData, error)

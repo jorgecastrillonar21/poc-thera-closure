@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"log"
 	"theraclosure/users-service/internal/adapters/config"

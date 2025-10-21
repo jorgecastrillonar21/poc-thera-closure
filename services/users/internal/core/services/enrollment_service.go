@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 	"fmt"
-	"time"
 	"theraclosure/users-service/internal/core/domain"
 	"theraclosure/users-service/internal/core/ports"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -28,12 +28,12 @@ func (s *enrollmentService) StartEnrollment(ctx context.Context, userID uuid.UUI
 	if err == nil && existing != nil {
 		return fmt.Errorf("enrollment already exists for user %s", userID.String())
 	}
-	
+
 	// Validate plan
 	if !s.isValidPlan(selectedPlan) {
 		return fmt.Errorf("invalid plan: %s", selectedPlan)
 	}
-	
+
 	// Create new enrollment data
 	enrollment := &domain.EnrollmentData{
 		UserID:                   userID,
@@ -49,11 +49,11 @@ func (s *enrollmentService) StartEnrollment(ctx context.Context, userID uuid.UUI
 		PaymentStatus:            "pending",
 		PreferredContactMethod:   "email",
 	}
-	
+
 	if err := s.enrollmentRepo.Create(ctx, enrollment); err != nil {
 		return fmt.Errorf("failed to create enrollment: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -63,7 +63,7 @@ func (s *enrollmentService) GetEnrollment(ctx context.Context, userID uuid.UUID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get enrollment: %w", err)
 	}
-	
+
 	return enrollment, nil
 }
 
@@ -72,7 +72,7 @@ func (s *enrollmentService) UpdateEnrollment(ctx context.Context, enrollment *do
 	if err := s.enrollmentRepo.Update(ctx, enrollment); err != nil {
 		return fmt.Errorf("failed to update enrollment: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -82,7 +82,7 @@ func (s *enrollmentService) CompleteStep(ctx context.Context, userID uuid.UUID, 
 	if err != nil {
 		return fmt.Errorf("enrollment not found: %w", err)
 	}
-	
+
 	// Mark the specific step as complete
 	switch step {
 	case 1:
@@ -100,7 +100,7 @@ func (s *enrollmentService) CompleteStep(ctx context.Context, userID uuid.UUID, 
 	default:
 		return fmt.Errorf("invalid step number: %d", step)
 	}
-	
+
 	// Update current step if this is the next step
 	if step >= enrollment.CurrentStep {
 		enrollment.CurrentStep = step + 1
@@ -108,17 +108,17 @@ func (s *enrollmentService) CompleteStep(ctx context.Context, userID uuid.UUID, 
 			enrollment.CurrentStep = enrollment.TotalSteps
 		}
 	}
-	
+
 	// Update enrollment
 	if err := s.enrollmentRepo.Update(ctx, enrollment); err != nil {
 		return fmt.Errorf("failed to update enrollment step: %w", err)
 	}
-	
+
 	// Check if all steps are complete
 	if s.allStepsComplete(enrollment) {
 		return s.CompleteEnrollment(ctx, userID)
 	}
-	
+
 	return nil
 }
 
@@ -128,7 +128,7 @@ func (s *enrollmentService) GetCurrentStep(ctx context.Context, userID uuid.UUID
 	if err != nil {
 		return 0, fmt.Errorf("enrollment not found: %w", err)
 	}
-	
+
 	return enrollment.CurrentStep, nil
 }
 
@@ -138,10 +138,10 @@ func (s *enrollmentService) GetProgress(ctx context.Context, userID uuid.UUID) (
 	if err != nil {
 		return 0, fmt.Errorf("enrollment not found: %w", err)
 	}
-	
+
 	completed := s.countCompletedSteps(enrollment)
 	progress := float64(completed) / float64(enrollment.TotalSteps) * 100
-	
+
 	return progress, nil
 }
 
@@ -151,22 +151,22 @@ func (s *enrollmentService) CompleteEnrollment(ctx context.Context, userID uuid.
 	if err != nil {
 		return fmt.Errorf("enrollment not found: %w", err)
 	}
-	
+
 	// Validate that all steps are complete
 	if err := s.ValidateEnrollmentCompletion(ctx, userID); err != nil {
 		return fmt.Errorf("cannot complete enrollment: %w", err)
 	}
-	
+
 	// Update enrollment status
 	enrollment.EnrollmentStatus = "completed"
 	enrollment.CurrentStep = enrollment.TotalSteps
 	now := time.Now()
 	enrollment.CompletionDate = &now
-	
+
 	if err := s.enrollmentRepo.Update(ctx, enrollment); err != nil {
 		return fmt.Errorf("failed to complete enrollment: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -176,15 +176,15 @@ func (s *enrollmentService) ValidateEnrollmentCompletion(ctx context.Context, us
 	if err != nil {
 		return fmt.Errorf("enrollment not found: %w", err)
 	}
-	
+
 	if !s.allStepsComplete(enrollment) {
 		return fmt.Errorf("not all enrollment steps are complete")
 	}
-	
+
 	if enrollment.PaymentStatus != "completed" {
 		return fmt.Errorf("payment not completed")
 	}
-	
+
 	return nil
 }
 
@@ -193,19 +193,19 @@ func (s *enrollmentService) UpdateSelectedPlan(ctx context.Context, userID uuid.
 	if !s.isValidPlan(plan) {
 		return fmt.Errorf("invalid plan: %s", plan)
 	}
-	
+
 	enrollment, err := s.enrollmentRepo.GetByUserID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("enrollment not found: %w", err)
 	}
-	
+
 	enrollment.SelectedPlan = plan
 	enrollment.PaymentStatus = "pending" // Reset payment status when plan changes
-	
+
 	if err := s.enrollmentRepo.Update(ctx, enrollment); err != nil {
 		return fmt.Errorf("failed to update selected plan: %w", err)
 	}
-	
+
 	return nil
 }
 

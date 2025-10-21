@@ -3,9 +3,9 @@ package persistence
 import (
 	"context"
 	"fmt"
-	"time"
 	"theraclosure/users-service/internal/core/domain"
 	"theraclosure/users-service/internal/core/ports"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

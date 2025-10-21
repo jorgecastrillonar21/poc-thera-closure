@@ -1,6 +1,5 @@
 package http
 
-
 import (
 	"context"
 	"fmt"
@@ -9,9 +8,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 	"theraclosure/users-service/internal/adapters/config"
 	"theraclosure/users-service/internal/core/ports"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

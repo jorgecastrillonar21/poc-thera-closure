@@ -83,6 +83,12 @@ auth: ## Start only the auth service
 	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_INFRA) -f $(COMPOSE_FILE_SERVICES) up -d --no-recreate auth-service
 	@echo "$(GREEN)✓ Auth service started$(NC)"
 
+# Start only users service
+users: ## Start only the users service
+	@echo "$(BLUE)Starting users service...$(NC)"
+	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_INFRA) -f $(COMPOSE_FILE_SERVICES) up -d --no-recreate users-service
+	@echo "$(GREEN)✓ Users service started$(NC)"
+
 # Build services
 build: check-deps ## Build all service images
 	@echo "$(BLUE)Building service images...$(NC)"
@@ -94,6 +100,11 @@ build-auth: check-deps ## Build auth service image
 	@echo "$(BLUE)Building auth service image...$(NC)"
 	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_INFRA) -f $(COMPOSE_FILE_SERVICES) build auth-service
 	@echo "$(GREEN)✓ Auth service image built$(NC)"
+
+build-users: check-deps ## Build users service image
+	@echo "$(BLUE)Building users service image...$(NC)"
+	@$(DOCKER_COMPOSE) -f $(COMPOSE_FILE_INFRA) -f $(COMPOSE_FILE_SERVICES) build users-service
+	@echo "$(GREEN)✓ Users service image built$(NC)"
 
 # Run database migrations
 migrate: ## Run database migrations

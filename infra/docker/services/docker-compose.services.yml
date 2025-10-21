@@ -43,6 +43,45 @@ services:
       retries: 5
       start_period: 40s
 
+  # Users Microservice
+  users-service:
+    build:
+      context: ../../services/users
+      dockerfile: Dockerfile
+    container_name: theraclosure-users-service
+    restart: unless-stopped
+    environment:
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: theraclosure
+      DB_PASSWORD: password123
+      DB_NAME: theraclosure_users
+      DB_SSL_MODE: disable
+      
+      # Server Configuration
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 3002
+      SERVER_MODE: release
+      
+      # Application Configuration
+      APP_NAME: theraclosure-users-service
+      APP_VERSION: 1.0.0
+      APP_LOG_LEVEL: info
+    ports:
+      - "3002:3002"
+    networks:
+      - theraclosure-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
 networks:
   theraclosure-network:
     external: true

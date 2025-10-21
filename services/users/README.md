@@ -212,27 +212,42 @@ curl http://localhost:3002/api/v1/enrollments/123e4567-e89b-12d3-a456-4266141740
 - Supports multi-step enrollment wizard UI
 - Real-time progress tracking for enrollment completion
 
-### Future Services Integration
-- **Payments Service**: Payment status updates for enrollment completion
-- **Core Service**: Template generation based on user profile data
+### Microservices Integration
+- **Auth Service**: JWT authentication and session management ✅
+- **Geolocation Service**: Countries/States/Cities data for address management 🚧 
+- **Payments Service**: Payment status updates for enrollment completion 📋
+- **Core Gateway**: API orchestration and template generation 📋
 
-## Production Deployment
+## 🐳 Docker Deployment ✅
 
-### Docker Compose
-The service is designed to work with the main TheraClosure docker-compose setup:
+### Current Status
+The Users Service is **fully dockerized** and integrated with the main infrastructure.
 
+### Quick Start
+```bash
+# Build and start the service
+make build-users  # Build Docker image
+make users        # Start containerized service
+
+# Or start all services
+make services     # Includes users service
+```
+
+### Docker Configuration
 ```yaml
 users-service:
   build: ./services/users
   ports:
     - "3002:3002"
   environment:
+    - DB_PASSWORD=password123
     - DB_HOST=postgres
     - DB_NAME=theraclosure_users
   depends_on:
-    - postgres
+    postgres:
+      condition: service_healthy
   healthcheck:
-    test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3002/health"]
+    test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
 ```
 
 ### Database Setup

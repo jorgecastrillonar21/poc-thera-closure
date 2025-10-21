@@ -7,9 +7,11 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Coverage from './pages/Coverage'
 import HowWeWork from './pages/HowWeWork'
-import { Retirement, Testimonials, FAQ, Contact, Enrollment, Templates, Billing, Support } from './pages/AllPages'
+import { Retirement, Testimonials, FAQ, Contact, Templates, Billing, Support } from './pages/AllPages'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Enrollment from './pages/Enrollment'
+import UserManagement from './pages/UserManagement'
 
 const App: React.FC = () => {
   return (
@@ -30,11 +32,12 @@ const App: React.FC = () => {
           {/* Protected routes */}
           <Route path="dashboard" element={<ProtectedRoute />}>
             <Route index element={<Dashboard />} />
-            <Route path="enrollment" element={<Enrollment />} />
-            <Route path="templates" element={<Templates />} />
-            <Route path="billing" element={<Billing />} />
-            <Route path="support" element={<Support />} />
           </Route>
+          <Route path="enrollment" element={<Enrollment />} />
+          <Route path="user-management" element={<UserManagement />} />
+          <Route path="templates" element={<Templates />} />
+          <Route path="billing" element={<Billing />} />
+          <Route path="support" element={<Support />} />
         </Route>
       </Routes>
     </Box>

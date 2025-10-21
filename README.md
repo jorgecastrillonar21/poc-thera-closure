@@ -9,10 +9,11 @@ A comprehensive full-stack web application for helping therapists close their pr
 theraclosure-web-app/
 ├── frontend/                 # React + Vite + TypeScript + Material-UI
 ├── services/
-│   ├── auth/                # Authentication service (Go/Gin) ✅ RUNNING
-│   ├── users/               # User management service (Go/Gin)
-│   ├── payments/            # Stripe integration service (Go/Gin)
-│   └── core/                # API Gateway service (Go/Gin)
+│   ├── auth/                # Authentication service (Go/Gin) ✅ DOCKERIZED
+│   ├── users/               # User management service (Go/Gin) ✅ DOCKERIZED
+│   ├── geolocation/         # Countries/States/Cities service (Go/Gin) 🚧 PLANNED
+│   ├── payments/            # Stripe integration service (Go/Gin) 📋 PLANNED
+│   └── core/                # API Gateway service (Go/Gin + ActiveMQ) 📋 PLANNED
 ├── shared/                  # Shared TypeScript interfaces/DTOs
 ├── infra/                   # Infrastructure configurations
 │   ├── docker/              # Docker Compose files
@@ -35,18 +36,20 @@ theraclosure-web-app/
 - **Axios** for HTTP requests with JWT interceptors
 
 #### Backend Services
-- **Go 1.21** with Gin framework
+- **Go 1.23** with Gin framework
 - **Hexagonal Architecture** (Ports & Adapters)
 - **PostgreSQL** for persistent data
 - **Redis** for sessions and caching
-- **JWT** for authentication
-- **AWS Cognito** for SSO (OAuth2/OpenID Connect)
-- **Stripe** for payment processing
+- **ActiveMQ** for pub/sub messaging between services
+- **JWT** for authentication and authorization
+- **Geolocation API** for countries/states/cities data
+- **Stripe** for payment processing and subscriptions
 
 #### Infrastructure
 - **Docker Compose** for orchestrated services
-- **PostgreSQL 15** with specialized databases
-- **Redis 7** for caching and sessions
+- **PostgreSQL 15** with specialized databases per service
+- **Redis 7** for caching and session management
+- **ActiveMQ** for microservices communication
 - **pgAdmin 4** for database management
 - **Mailhog** for email testing
 - **Enterprise Makefile** for infrastructure management
@@ -135,7 +138,9 @@ make setup
 # Or step by step:
 make infra      # Start core infrastructure (PostgreSQL, Redis, etc.)
 make migrate    # Run database migrations  
-make services   # Start application services (auth, users, etc.)
+make services   # Start application services (auth, users, geolocation, payments, core)
+make users      # Start only users service
+make auth       # Start only auth service
 ```
 
 ### 3. Development Workflow
@@ -267,8 +272,15 @@ GET  /api/v1/auth/cognito/login # Initiate Cognito SSO
 
 ### Service Dependencies
 ```
-Frontend → Core Service → Auth/Users/Payments Services → PostgreSQL/Redis
+Frontend → Core Gateway → Auth/Users/Geolocation/Payments Services → PostgreSQL/Redis/ActiveMQ
 ```
+
+### Current Service Status
+- ✅ **Auth Service**: JWT authentication, session management (Dockerized)
+- ✅ **Users Service**: User profiles, enrollment workflow (Dockerized) 
+- 🚧 **Geolocation Service**: Countries/States/Cities management (Planned)
+- 📋 **Payments Service**: Stripe integration, subscriptions (Planned)
+- 📋 **Core Gateway**: API Gateway with ActiveMQ messaging (Planned)
 
 ### Health Checks
 All services include health check endpoints:
@@ -529,7 +541,38 @@ npm run build
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## � Project Status
+
+### Completed ✅
+- **Frontend Foundation**: React app with Material-UI, routing, and authentication
+- **Auth Service**: JWT authentication, session management, user registration/login
+- **Users Service**: User profiles, 5-step enrollment workflow, CRUD operations
+- **Infrastructure**: PostgreSQL, Redis, Docker orchestration with health checks
+- **Database Design**: Specialized databases per service with proper migrations
+
+### In Progress 🚧
+- **README Updates**: Documentation updates with new services information
+- **Frontend Integration**: React components for user management and enrollment
+
+### Planned 📋
+- **Geolocation Service**: Countries/States/Cities microservice with CRUD operations
+- **Payments Service**: Stripe integration with subscription management
+- **Core Gateway**: API Gateway with ActiveMQ pub/sub messaging
+- **Complete Frontend**: All 14 pages with full functionality
+- **Containerization**: All services properly dockerized and orchestrated
+
+### Architecture Progress
+```
+✅ Infrastructure Layer    - PostgreSQL, Redis, Docker, Makefile
+✅ Auth Microservice      - JWT, sessions, user authentication  
+✅ Users Microservice     - Profiles, enrollment, workflow management
+🚧 Geolocation Service   - Countries/states/cities data management
+📋 Payments Service      - Stripe integration, subscriptions
+📋 Core Gateway         - API orchestration with ActiveMQ messaging
+📋 Frontend Integration  - Complete React app with all services
+```
+
+## �📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
