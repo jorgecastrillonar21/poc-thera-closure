@@ -40,10 +40,12 @@ func TestHealthCheckEndpoints_WithDatabase(t *testing.T) {
 	server := NewServer(&MockPaymentService{}, cfg, db, nil, logger)
 
 	t.Run("Basic Health Check", func(t *testing.T) {
-		req, _ := http.NewRequest("GET", "/health", nil)
+		req, err := http.NewRequest("GET", "/health", nil)
+		assert.NoError(t, err)
+		
 		w := httptest.NewRecorder()
-		server.router.ServeHTTP(w, req)
-
+		server.Router.ServeHTTP(w, req)
+		
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), "healthy")
 	})
@@ -51,7 +53,7 @@ func TestHealthCheckEndpoints_WithDatabase(t *testing.T) {
 	t.Run("Detailed Health Check", func(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/health/detailed", nil)
 		w := httptest.NewRecorder()
-		server.router.ServeHTTP(w, req)
+		server.Router.ServeHTTP(w, req)
 
 		// Should return Service Unavailable due to invalid Stripe key
 		assert.Equal(t, http.StatusServiceUnavailable, w.Code)
@@ -64,7 +66,7 @@ func TestHealthCheckEndpoints_WithDatabase(t *testing.T) {
 	t.Run("Readiness Probe", func(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/health/ready", nil)
 		w := httptest.NewRecorder()
-		server.router.ServeHTTP(w, req)
+		server.Router.ServeHTTP(w, req)
 
 		// Readiness should fail due to invalid Stripe key
 		assert.Equal(t, http.StatusServiceUnavailable, w.Code)
@@ -74,7 +76,7 @@ func TestHealthCheckEndpoints_WithDatabase(t *testing.T) {
 	t.Run("Liveness Probe", func(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/health/live", nil)
 		w := httptest.NewRecorder()
-		server.router.ServeHTTP(w, req)
+		server.Router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), "alive")

@@ -36,7 +36,7 @@ func setupTestServer() (*gin.Engine, *config.Config) {
 	// Create server with mock service and nil dependencies for testing
 	server := NewServer(mockService, cfg, nil, nil, nil)
 
-	return server.router, cfg
+	return server.Router, cfg
 }
 
 // MockPaymentService is a simple mock for testing HTTP endpoints

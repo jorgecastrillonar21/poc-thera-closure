@@ -51,6 +51,24 @@ type Config struct {
 		Version  string `mapstructure:"version"`
 		LogLevel string `mapstructure:"log_level"`
 	} `mapstructure:"app"`
+
+	// Security configuration
+	Security struct {
+		JWTSecret            string            `mapstructure:"jwt_secret"`
+		APIKeys              map[string]string `mapstructure:"api_keys"`
+		BasicAuthUsers       map[string]string `mapstructure:"basic_auth_users"`
+		RateLimitRPS         int               `mapstructure:"rate_limit_rps"`
+		RateLimitWindow      string            `mapstructure:"rate_limit_window"`
+		MaxRequestSize       int64             `mapstructure:"max_request_size"`
+		EnableAuthentication bool              `mapstructure:"enable_authentication"`
+	} `mapstructure:"security"`
+
+	// Monitoring configuration
+	Monitoring struct {
+		Enabled            bool   `mapstructure:"enabled"`
+		MetricsPath        string `mapstructure:"metrics_path"`
+		CollectionInterval string `mapstructure:"collection_interval"`
+	} `mapstructure:"monitoring"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -77,6 +95,16 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("app.name", "theraclosure-payments-service")
 	viper.SetDefault("app.version", "1.0.0")
 	viper.SetDefault("app.log_level", "info")
+	viper.SetDefault("security.jwt_secret", "your-jwt-secret-change-in-production")
+	viper.SetDefault("security.api_keys", map[string]string{})
+	viper.SetDefault("security.basic_auth_users", map[string]string{})
+	viper.SetDefault("security.rate_limit_rps", 100)
+	viper.SetDefault("security.rate_limit_window", "1m")
+	viper.SetDefault("security.max_request_size", 10485760)   // 10MB
+	viper.SetDefault("security.enable_authentication", false) // Disabled by default for development
+	viper.SetDefault("monitoring.enabled", true)
+	viper.SetDefault("monitoring.metrics_path", "/metrics")
+	viper.SetDefault("monitoring.collection_interval", "15s")
 
 	// Configure viper
 	viper.SetConfigName("config")
@@ -156,6 +184,19 @@ func LoadConfig() (*Config, error) {
 
 	if logLevel := os.Getenv("APP_LOG_LEVEL"); logLevel != "" {
 		config.App.LogLevel = logLevel
+	}
+
+	// Security environment overrides
+	if jwtSecret := os.Getenv("JWT_SECRET"); jwtSecret != "" {
+		config.Security.JWTSecret = jwtSecret
+	}
+
+	if rateLimitWindow := os.Getenv("RATE_LIMIT_WINDOW"); rateLimitWindow != "" {
+		config.Security.RateLimitWindow = rateLimitWindow
+	}
+
+	if enableAuth := os.Getenv("ENABLE_AUTHENTICATION"); enableAuth == "true" {
+		config.Security.EnableAuthentication = true
 	}
 
 	return config, nil

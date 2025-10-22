@@ -1,0 +1,1026 @@
+basePath: /api/v1
+definitions:
+  domain.Customer:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      default_payment_method_id:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      payments:
+        items:
+          $ref: '#/definitions/domain.Payment'
+        type: array
+      stripe_id:
+        type: string
+      subscriptions:
+        description: Relationships
+        items:
+          $ref: '#/definitions/domain.Subscription'
+        type: array
+      updated_at:
+        type: string
+      user_id:
+        description: Reference to users service
+        type: string
+    type: object
+  domain.Payment:
+    properties:
+      amount:
+        description: Amount in cents
+        type: integer
+      created_at:
+        type: string
+      currency:
+        type: string
+      customer:
+        allOf:
+        - $ref: '#/definitions/domain.Customer'
+        description: Relationships
+      customer_id:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: string
+      metadata:
+        description: JSON metadata
+        type: string
+      payment_intent_id:
+        type: string
+      processed_at:
+        type: string
+      refunded_at:
+        type: string
+      status:
+        $ref: '#/definitions/domain.PaymentStatus'
+      stripe_id:
+        type: string
+      subscription:
+        $ref: '#/definitions/domain.Subscription'
+      subscription_id:
+        description: Optional for one-time payments
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.PaymentStatus:
+    enum:
+    - pending
+    - succeeded
+    - failed
+    - refunded
+    - canceled
+    type: string
+    x-enum-varnames:
+    - PaymentStatusPending
+    - PaymentStatusSucceeded
+    - PaymentStatusFailed
+    - PaymentStatusRefunded
+    - PaymentStatusCanceled
+  domain.Subscription:
+    properties:
+      active:
+        type: boolean
+      amount:
+        description: Amount in cents
+        type: integer
+      cancel_at:
+        type: string
+      canceled_at:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      current_period_end:
+        type: string
+      current_period_start:
+        type: string
+      customer:
+        allOf:
+        - $ref: '#/definitions/domain.Customer'
+        description: Relationships
+      customer_id:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      payments:
+        items:
+          $ref: '#/definitions/domain.Payment'
+        type: array
+      price_id:
+        description: Stripe Price ID
+        type: string
+      status:
+        $ref: '#/definitions/domain.SubscriptionStatus'
+      stripe_id:
+        type: string
+      trial_end:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  domain.SubscriptionStatus:
+    enum:
+    - active
+    - canceled
+    - trialing
+    - past_due
+    - unpaid
+    - paused
+    type: string
+    x-enum-varnames:
+    - SubscriptionStatusActive
+    - SubscriptionStatusCanceled
+    - SubscriptionStatusTrialing
+    - SubscriptionStatusPastDue
+    - SubscriptionStatusUnpaid
+    - SubscriptionStatusPaused
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  ports.ConfirmPaymentIntentResponse:
+    properties:
+      payment_id:
+        type: string
+      payment_intent_id:
+        type: string
+      status:
+        type: string
+    type: object
+  ports.CreateCustomerRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: string
+    required:
+    - email
+    - name
+    - user_id
+    type: object
+  ports.CreatePaymentIntentRequest:
+    properties:
+      amount:
+        minimum: 1
+        type: integer
+      currency:
+        type: string
+      customer_id:
+        type: string
+      description:
+        type: string
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
+    required:
+    - amount
+    - currency
+    - customer_id
+    type: object
+  ports.CreatePaymentIntentResponse:
+    properties:
+      client_secret:
+        type: string
+      payment_intent_id:
+        type: string
+      status:
+        type: string
+    type: object
+  ports.CreatePaymentRequest:
+    properties:
+      amount:
+        minimum: 1
+        type: integer
+      currency:
+        type: string
+      customer_id:
+        type: string
+      description:
+        type: string
+      metadata:
+        additionalProperties:
+          type: string
+        type: object
+      subscription_id:
+        type: string
+    required:
+    - amount
+    - currency
+    - customer_id
+    type: object
+  ports.CreateSubscriptionRequest:
+    properties:
+      customer_id:
+        type: string
+      price_id:
+        type: string
+      trial_days:
+        type: integer
+    required:
+    - customer_id
+    - price_id
+    type: object
+  ports.ListCustomersResponse:
+    properties:
+      customers:
+        items:
+          $ref: '#/definitions/domain.Customer'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  ports.ListPaymentsResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      payments:
+        items:
+          $ref: '#/definitions/domain.Payment'
+        type: array
+      total:
+        type: integer
+    type: object
+  ports.ListSubscriptionsResponse:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      subscriptions:
+        items:
+          $ref: '#/definitions/domain.Subscription'
+        type: array
+      total:
+        type: integer
+    type: object
+  ports.UpdateCustomerRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+  ports.UpdateSubscriptionRequest:
+    properties:
+      cancel_at:
+        description: Unix timestamp
+        type: integer
+      price_id:
+        type: string
+      status:
+        $ref: '#/definitions/domain.SubscriptionStatus'
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:3004
+info:
+  contact:
+    email: support@theraclosure.com
+    name: API Support
+    url: http://www.theraclosure.com/support
+  description: A comprehensive payments service built with Go, providing customer
+    management, subscription handling, and Stripe integration.
+  license:
+    name: MIT
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Payments Service API
+  version: "1.0"
+paths:
+  /api/v1/customers:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list of customers with optional filtering
+      parameters:
+      - default: 0
+        description: Number of records to skip
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Maximum number of records to return
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - description: Filter by email
+        in: query
+        name: email
+        type: string
+      - description: Filter by user ID
+        in: query
+        name: user_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of customers
+          schema:
+            $ref: '#/definitions/ports.ListCustomersResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List customers
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      description: Creates a new customer in the payments system with Stripe integration
+      parameters:
+      - description: Customer creation request
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/ports.CreateCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Customer created successfully
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Customer already exists
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new customer
+      tags:
+      - customers
+  /api/v1/customers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a customer and cancels all their subscriptions
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customer deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid customer ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Customer not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete customer
+      tags:
+      - customers
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific customer by their ID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customer details
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "400":
+          description: Invalid customer ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Customer not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get customer by ID
+      tags:
+      - customers
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing customer's information
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Customer update request
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/ports.UpdateCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated customer details
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "400":
+          description: Invalid request body or customer ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Customer not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update customer
+      tags:
+      - customers
+  /api/v1/customers/user/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a customer by their associated user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Customer details
+          schema:
+            $ref: '#/definitions/domain.Customer'
+        "400":
+          description: Invalid user ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Customer not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get customer by user ID
+      tags:
+      - customers
+  /api/v1/payment-intents:
+    post:
+      consumes:
+      - application/json
+      description: Creates a Stripe Payment Intent for collecting payment from customers
+      parameters:
+      - description: Payment intent creation request
+        in: body
+        name: paymentIntent
+        required: true
+        schema:
+          $ref: '#/definitions/ports.CreatePaymentIntentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Payment intent created successfully
+          schema:
+            $ref: '#/definitions/ports.CreatePaymentIntentResponse'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Customer not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create payment intent
+      tags:
+      - payment-intents
+  /api/v1/payment-intents/{id}/confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirms a Stripe Payment Intent to complete the payment process
+      parameters:
+      - description: Payment Intent ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payment intent confirmed successfully
+          schema:
+            $ref: '#/definitions/ports.ConfirmPaymentIntentResponse'
+        "400":
+          description: Invalid payment intent ID or confirmation request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Payment intent not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Confirm payment intent
+      tags:
+      - payment-intents
+  /api/v1/payments:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list of payments with optional filtering
+      parameters:
+      - default: 0
+        description: Number of records to skip
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Maximum number of records to return
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by customer ID
+        in: query
+        name: customer_id
+        type: string
+      - description: Filter by subscription ID
+        in: query
+        name: subscription_id
+        type: string
+      - description: Filter by status (succeeded, failed, etc.)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of payments
+          schema:
+            $ref: '#/definitions/ports.ListPaymentsResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List payments
+      tags:
+      - payments
+    post:
+      consumes:
+      - application/json
+      description: Creates a new one-time payment for a customer
+      parameters:
+      - description: Payment creation request
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/ports.CreatePaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Payment created successfully
+          schema:
+            $ref: '#/definitions/domain.Payment'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Customer not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new payment
+      tags:
+      - payments
+  /api/v1/payments/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific payment by its ID
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payment details
+          schema:
+            $ref: '#/definitions/domain.Payment'
+        "400":
+          description: Invalid payment ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Payment not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get payment by ID
+      tags:
+      - payments
+  /api/v1/payments/{id}/refund:
+    post:
+      consumes:
+      - application/json
+      description: Issues a refund for an existing payment
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Refund request (optional amount and reason)
+        in: body
+        name: refund
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Refunded payment details
+          schema:
+            $ref: '#/definitions/domain.Payment'
+        "400":
+          description: Invalid payment ID or refund request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Payment not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Refund payment
+      tags:
+      - payments
+  /api/v1/subscriptions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list of subscriptions with optional filtering
+      parameters:
+      - default: 0
+        description: Number of records to skip
+        in: query
+        name: offset
+        type: integer
+      - default: 10
+        description: Maximum number of records to return
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by customer ID
+        in: query
+        name: customer_id
+        type: string
+      - description: Filter by status (active, canceled, etc.)
+        in: query
+        name: status
+        type: string
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of subscriptions
+          schema:
+            $ref: '#/definitions/ports.ListSubscriptionsResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List subscriptions
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Creates a new subscription for a customer with Stripe integration
+      parameters:
+      - description: Subscription creation request
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/ports.CreateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Subscription created successfully
+          schema:
+            $ref: '#/definitions/domain.Subscription'
+        "400":
+          description: Invalid request body or validation error
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Customer not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new subscription
+      tags:
+      - subscriptions
+  /api/v1/subscriptions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Cancels an active subscription
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Canceled subscription details
+          schema:
+            $ref: '#/definitions/domain.Subscription'
+        "400":
+          description: Invalid subscription ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Subscription not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Cancel subscription
+      tags:
+      - subscriptions
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a specific subscription by its ID
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Subscription details
+          schema:
+            $ref: '#/definitions/domain.Subscription'
+        "400":
+          description: Invalid subscription ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Subscription not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get subscription by ID
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing subscription (e.g., change price)
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Subscription update request
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/ports.UpdateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated subscription details
+          schema:
+            $ref: '#/definitions/domain.Subscription'
+        "400":
+          description: Invalid request body or subscription ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Subscription not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update subscription
+      tags:
+      - subscriptions
+  /api/v1/webhooks/stripe:
+    post:
+      consumes:
+      - application/json
+      description: Processes incoming Stripe webhook events for payment updates
+      parameters:
+      - description: Stripe webhook signature for verification
+        in: header
+        name: Stripe-Signature
+        required: true
+        type: string
+      - description: Stripe webhook payload
+        in: body
+        name: webhook
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Webhook processed successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid webhook signature or payload
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Handle Stripe webhook
+      tags:
+      - webhooks
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

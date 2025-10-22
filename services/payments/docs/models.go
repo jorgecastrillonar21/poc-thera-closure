@@ -1,6 +1,5 @@
 package docs
 
-
 // This file contains all the API models used in Swagger documentation
 // These structs are used for generating proper OpenAPI specifications
 
@@ -21,15 +20,15 @@ type UpdateCustomerRequest struct {
 
 // CustomerResponse represents a customer in API responses
 type CustomerResponse struct {
-	ID                      string `json:"id" example:"cus_1234567890"`
-	UserID                  string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
-	StripeID                string `json:"stripe_id" example:"cus_stripe_1234567890"`
-	Email                   string `json:"email" example:"john.doe@example.com"`
-	Name                    string `json:"name" example:"John Doe"`
-	DefaultPaymentMethodID  string `json:"default_payment_method_id,omitempty" example:"pm_1234567890"`
-	Active                  bool   `json:"active" example:"true"`
-	CreatedAt               string `json:"created_at" example:"2023-01-01T00:00:00Z"`
-	UpdatedAt               string `json:"updated_at" example:"2023-01-01T00:00:00Z"`
+	ID                     string `json:"id" example:"cus_1234567890"`
+	UserID                 string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	StripeID               string `json:"stripe_id" example:"cus_stripe_1234567890"`
+	Email                  string `json:"email" example:"john.doe@example.com"`
+	Name                   string `json:"name" example:"John Doe"`
+	DefaultPaymentMethodID string `json:"default_payment_method_id,omitempty" example:"pm_1234567890"`
+	Active                 bool   `json:"active" example:"true"`
+	CreatedAt              string `json:"created_at" example:"2023-01-01T00:00:00Z"`
+	UpdatedAt              string `json:"updated_at" example:"2023-01-01T00:00:00Z"`
 } // @name CustomerResponse
 
 // ListCustomersResponse represents the response for listing customers
@@ -177,12 +176,12 @@ type ComponentHealth struct {
 
 // ErrorResponse represents an error response
 type ErrorResponse struct {
-	Error     string            `json:"error" example:"VALIDATION_ERROR"`
-	Message   string            `json:"message" example:"Validation failed"`
-	Details   string            `json:"details,omitempty" example:"Field 'email' is required"`
+	Error     string                 `json:"error" example:"VALIDATION_ERROR"`
+	Message   string                 `json:"message" example:"Validation failed"`
+	Details   string                 `json:"details,omitempty" example:"Field 'email' is required"`
 	Context   map[string]interface{} `json:"context,omitempty"`
-	Timestamp string            `json:"timestamp" example:"2023-01-01T00:00:00Z"`
-	RequestID string            `json:"request_id,omitempty" example:"req_1234567890"`
+	Timestamp string                 `json:"timestamp" example:"2023-01-01T00:00:00Z"`
+	RequestID string                 `json:"request_id,omitempty" example:"req_1234567890"`
 } // @name ErrorResponse
 
 // Common Query Parameters
@@ -195,9 +194,9 @@ type PaginationParams struct {
 
 // CustomerFilters represents customer filtering parameters
 type CustomerFilters struct {
-	Active *bool   `form:"active" example:"true"`
-	Email  string  `form:"email" example:"john@example.com"`
-	UserID string  `form:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Active *bool  `form:"active" example:"true"`
+	Email  string `form:"email" example:"john@example.com"`
+	UserID string `form:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
 } // @name CustomerFilters
 
 // SubscriptionFilters represents subscription filtering parameters
